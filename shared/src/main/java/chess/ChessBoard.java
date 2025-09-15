@@ -20,6 +20,10 @@ public class ChessBoard {
         
     }
 
+    public ChessPiece[][] getBoard(){
+        return board;
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -106,7 +110,7 @@ public class ChessBoard {
         setKnights();
         setBishops();
         setQueens();
-        setQueens();
+        setKings();
     }
 
     @Override
@@ -125,6 +129,18 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return Arrays.toString(board);
+        String newString = "";
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                if (board[i][j] == null){
+                    newString += "null";
+                }
+                else{
+                    newString += board[i][j].toString();
+                }
+
+            }
+        }
+        return newString;
     }
 }

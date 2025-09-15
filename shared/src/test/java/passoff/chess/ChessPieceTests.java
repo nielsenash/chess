@@ -33,7 +33,6 @@ public class ChessPieceTests extends EqualsTestingUtility<ChessPiece> {
         );
     }
 
-
     @Test
     @DisplayName("Piece Move on All Pieces")
     public void pieceMoveAllPieces() {
