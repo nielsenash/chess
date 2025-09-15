@@ -1,9 +1,6 @@
 package chess;
 
 import java.util.Collection;
-import java.util.HashSet;
-
-import static chess.ChessPiece.PieceType.BISHOP;
 
 /**
  * Represents a single chess piece
@@ -47,55 +44,10 @@ public record ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType ty
      * @return Collection of valid moves
      */
 
-    public HashSet<ChessMove> getBishopMoves(ChessBoard board, ChessPosition myPosition){
-        var set = new HashSet<ChessMove>();
-        var x = myPosition.row();
-        var y = myPosition.col();
-        while (x >= 1 && y >= 1 && x <= 8 && y <= 8){
-            set.add(new ChessMove(myPosition, new ChessPosition(x-1,y-1), null));
-            if (board.getBoard()[x-1][y-1]!= null){
-                break;
-            }
-            x--;
-            y--;
-        }
-        x = myPosition.row();
-        y = myPosition.col();
-        while (x >= 1 && y >= 1 && x <= 8 && y <= 8){
-            set.add(new ChessMove(myPosition, new ChessPosition(x-1,y+1), null));
-            if (board.getBoard()[x-1][y+1]!= null){
-                break;
-            }
-            x--;
-            y++;
-        }
-        x = myPosition.row();
-        y = myPosition.col();
-        while (x >= 1 && y >= 1 && x <= 8 && y <= 8){
-            set.add(new ChessMove(myPosition, new ChessPosition(x+1,y-1), null));
-            if (board.getBoard()[x+1][y-1]!= null){
-                break;
-            }
-            x++;
-            y--;
-        }
-        x = myPosition.row();
-        y = myPosition.col();
-        while (x >= 1 && y >= 1 && x <= 8 && y <= 8){
-            set.add(new ChessMove(myPosition, new ChessPosition(x+1,y+1), null));
-            if (board.getBoard()[x+1][y+1]!= null){
-                break;
-            }
-            x++;
-            y++;
-        }
-        return set;
-    }
 
-
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         return switch(type) {
-                    case BISHOP -> getBishopMoves(board, myPosition);
+                    case BISHOP -> new BishopMoves().getPieceMoves(board,position);
                     case KNIGHT -> null;
                     case ROOK -> null;
                     case QUEEN -> null;
