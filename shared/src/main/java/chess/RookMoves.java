@@ -1,11 +1,18 @@
 package chess;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 public class RookMoves implements MoveCollection{
+    HashSet<ChessMove> set = new HashSet<>();
+
     @Override
     public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return List.of();
+        calculateMoves(board,myPosition, 1,0,set);
+        calculateMoves(board,myPosition, -1,0,set);
+        calculateMoves(board,myPosition, 0,1,set);
+        calculateMoves(board,myPosition, 0,-1,set );
+
+        return set;
     }
 }
