@@ -7,15 +7,15 @@ public class QueenMoves implements MoveCollection{
     HashSet<ChessMove> set = new HashSet<>();
 
     @Override
-    public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition myPosition) {
-        calculateMoves(board,myPosition, 1,0,set);
-        calculateMoves(board,myPosition, -1,0,set);
-        calculateMoves(board,myPosition, 0,1,set);
-        calculateMoves(board,myPosition, 0,-1,set );
-        calculateMoves(board,myPosition, 1,1,set);
-        calculateMoves(board,myPosition, 1,-1,set);
-        calculateMoves(board,myPosition, -1,1,set);
-        calculateMoves(board,myPosition, -1,-1,set );
+    public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
+        calculateMoves(board,myPosition, 1,0,set, color);
+        calculateMoves(board,myPosition, -1,0,set, color);
+        calculateMoves(board,myPosition, 0,1,set, color);
+        calculateMoves(board,myPosition, 0,-1,set, color );
+        calculateMoves(board,myPosition, 1,1,set, color);
+        calculateMoves(board,myPosition, 1,-1,set, color);
+        calculateMoves(board,myPosition, -1,1,set, color);
+        calculateMoves(board,myPosition, -1,-1,set, color );
 
         return set;
     }

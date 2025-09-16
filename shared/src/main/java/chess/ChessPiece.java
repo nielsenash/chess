@@ -47,11 +47,11 @@ public record ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType ty
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
         return switch(type) {
-                    case BISHOP -> new BishopMoves().getPieceMoves(board,position);
-                    case KNIGHT -> new KnightMoves().getPieceMoves(board,position);
-                    case ROOK -> new RookMoves().getPieceMoves(board,position);
-                    case QUEEN -> new QueenMoves().getPieceMoves(board,position);
-                    case KING -> new KingMoves().getPieceMoves(board,position);
+                    case BISHOP -> new BishopMoves().getPieceMoves(board,position, pieceColor);
+                    case KNIGHT -> new KnightMoves().getPieceMoves(board,position,pieceColor);
+                    case ROOK -> new RookMoves().getPieceMoves(board,position,pieceColor);
+                    case QUEEN -> new QueenMoves().getPieceMoves(board,position,pieceColor);
+                    case KING -> new KingMoves().getPieceMoves(board,position,pieceColor);
                     case PAWN -> null;
                 };
     }
