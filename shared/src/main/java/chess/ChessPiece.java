@@ -52,7 +52,7 @@ public record ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType ty
                     case ROOK -> new RookMoves().getPieceMoves(board,position,pieceColor);
                     case QUEEN -> new QueenMoves().getPieceMoves(board,position,pieceColor);
                     case KING -> new KingMoves().getPieceMoves(board,position,pieceColor);
-                    case PAWN -> null;
+                    case PAWN -> new PawnMoves().getPieceMoves(board,position,pieceColor);
                 };
     }
 }
