@@ -12,17 +12,17 @@ public class PawnMoves implements MoveCollection{
     HashSet<ChessMove> set = new HashSet<>();
 
     public void addMoves(ChessMove move, ChessGame.TeamColor color){
-        if (move.endPosition().row() == 8 && color == WHITE){
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), BISHOP));
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), KNIGHT));
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), ROOK));
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), QUEEN));
+        if (move.getEndPosition().row() == 8 && color == WHITE){
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), BISHOP));
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), KNIGHT));
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), ROOK));
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), QUEEN));
         }
-        else if (move.endPosition().row() == 1 && color == BLACK){
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), BISHOP));
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), KNIGHT));
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), ROOK));
-            set.add(new ChessMove(move.startPosition(), move.endPosition(), QUEEN));
+        else if (move.getEndPosition().row() == 1 && color == BLACK){
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), BISHOP));
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), KNIGHT));
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), ROOK));
+            set.add(new ChessMove(move.getStartPosition(), move.getEndPosition(), QUEEN));
         }
         else{
             set.add(move);
