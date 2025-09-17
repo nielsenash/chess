@@ -60,14 +60,14 @@ public class PawnMoves implements MoveCollection{
         int x = myPosition.row();
         int y = myPosition.col();
 
-        if (y>0){
+        if (y>1){
             if (color == WHITE && board.getBoard()[x][y-2]!= null && board.getPiece(new ChessPosition(x+1, y-1)).pieceColor()==BLACK){
                 addMoves(new ChessMove(myPosition, new ChessPosition(x+1,y-1), null),color);
             }
             if (color == BLACK && board.getBoard()[x-2][y-2]!= null && board.getPiece(new ChessPosition(x-1, y-1)).pieceColor()==WHITE){
                 addMoves(new ChessMove(myPosition, new ChessPosition(x-1,y-1), null),color);
             }
-        if (y<7){
+        if (y<8){
             if (color == WHITE && board.getBoard()[x][y]!= null && board.getPiece(new ChessPosition(x+1, y+1)).pieceColor()==BLACK){
                 addMoves(new ChessMove(myPosition, new ChessPosition(x+1,y+1), null),color);
             }
