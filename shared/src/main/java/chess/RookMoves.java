@@ -1,18 +1,14 @@
 package chess;
 
-import java.util.Collection;
 import java.util.HashSet;
 
-public class RookMoves implements MoveCollection{
-    HashSet<ChessMove> set = new HashSet<>();
-
-    @Override
-    public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
-        calculateMoves(board,myPosition, 1,0,set, color);
-        calculateMoves(board,myPosition, -1,0,set, color);
-        calculateMoves(board,myPosition, 0,1,set, color);
-        calculateMoves(board,myPosition, 0,-1,set, color);
-
+public class RookMoves implements RepeatedMoves{
+    HashSet<ChessMove> returnMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color){
+        var set = new HashSet<ChessMove>();
+        calculateMoves(board, pos, color, 1,0, set);
+        calculateMoves(board, pos, color, -1,0, set);
+        calculateMoves(board, pos, color, 0,1, set);
+        calculateMoves(board, pos, color, 0,-1, set);
         return set;
     }
 }

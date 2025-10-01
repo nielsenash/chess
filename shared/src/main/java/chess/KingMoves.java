@@ -1,33 +1,18 @@
 package chess;
 
-import java.util.Collection;
 import java.util.HashSet;
 
-public class KingMoves implements MoveCollection{
-    HashSet<ChessMove> set = new HashSet<>();
-
-
-    public void calculateMoves(ChessBoard board, ChessPosition myPosition, int xChange, int yChange,HashSet<ChessMove> set,ChessGame.TeamColor color ){
-        var x = myPosition.row()+xChange;
-        var y = myPosition.col()+yChange;
-        if (x >= 1 && y >= 1 && x <= 8 && y <= 8){
-            if (board.getBoard()[x-1][y-1] == null || board.getPiece(new ChessPosition(x,y)).pieceColor() != color){
-                set.add(new ChessMove(myPosition, new ChessPosition(x,y), null));
-            }
-        }
-    }
-
-    @Override
-    public Collection<ChessMove> getPieceMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor color) {
-        calculateMoves(board,myPosition, -1,0,set, color);
-        calculateMoves(board,myPosition, -1,1,set, color);
-        calculateMoves(board,myPosition, 0,1,set, color);
-        calculateMoves(board,myPosition, 1,1,set, color);
-        calculateMoves(board,myPosition, 1,0,set, color);
-        calculateMoves(board,myPosition, 1,-1,set, color);
-        calculateMoves(board,myPosition, 0,-1,set, color);
-        calculateMoves(board,myPosition, -1,-1,set, color);
-
+public class KingMoves implements SingleMoves{
+    HashSet<ChessMove> returnMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color){
+        var set = new HashSet<ChessMove>();
+        calculateMoves(board, pos, color, 1,1, set);
+        calculateMoves(board, pos, color, 1,-1, set);
+        calculateMoves(board, pos, color, -1,1, set);
+        calculateMoves(board, pos, color, -1,-1, set);
+        calculateMoves(board, pos, color, 1,0, set);
+        calculateMoves(board, pos, color, -1,0, set);
+        calculateMoves(board, pos, color, 0,1, set);
+        calculateMoves(board, pos, color, 0,-1, set);
         return set;
     }
 }
