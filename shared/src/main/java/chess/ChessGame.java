@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
+import static chess.ChessPiece.PieceType.QUEEN;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -16,6 +18,8 @@ public class ChessGame {
     private ChessBoard chessBoard;
 
     public ChessGame(){
+        this.chessBoard = new ChessBoard();
+        this.chessBoard.resetBoard();
     }
 
     /**
@@ -84,6 +88,7 @@ public class ChessGame {
         }
         var newTeam = team==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
         setTeamTurn(newTeam);
+//        System.out.println(chessBoard.toString());
     }
 
 
@@ -115,9 +120,10 @@ public class ChessGame {
         return false;
     }
 
-    public boolean pieceAttacksKing(ChessPiece piece, ChessPosition PiecePosition, ChessPosition kingPosition){
-        for (ChessMove move: piece.pieceMoves(chessBoard,PiecePosition)){
-            if (move.endPosition == kingPosition){
+    public boolean pieceAttacksKing(ChessPiece piece, ChessPosition piecePosition, ChessPosition kingPosition){
+        var set = piece.pieceMoves(chessBoard,piecePosition);
+        for (ChessMove move: set){
+            if (move.getEndPosition().row ==kingPosition.row && move.getEndPosition().col ==kingPosition.col){
                 return true;
             }
         }
@@ -133,7 +139,8 @@ public class ChessGame {
 
     public boolean isInCheck(TeamColor teamColor) {
         var pos = findKing(teamColor);
-        return opposingPiecesAttackKing(pos,teamColor);
+        var isinCheck = opposingPiecesAttackKing(pos,teamColor);
+        return isinCheck;
     }
 
     /**
@@ -143,7 +150,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return isInCheck(teamColor); //&& nobody has moves
+        return false; // isInCheck(teamColor) && nobody has moves
     }
 
     /**
@@ -154,7 +161,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return !isInCheck(teamColor); //&& nobody has moves
+        return false; // !isInCheck(teamColor) && nobody has moves
     }
 
     /**
