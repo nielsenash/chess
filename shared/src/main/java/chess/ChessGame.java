@@ -158,8 +158,6 @@ public class ChessGame {
             for (int j = 1; j <= 8; j++){
                 var piece = chessBoard.getPiece(new ChessPosition(i,j));
                 if (piece!= null && piece.pieceColor == teamColor){
-//                    System.out.println(piece);
-//                    System.out.println(validMoves(new ChessPosition(i,j)));
                     if (!validMoves(new ChessPosition(i,j)).isEmpty()){
                         return false;
                     }
