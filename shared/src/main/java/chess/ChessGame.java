@@ -57,9 +57,10 @@ public class ChessGame {
         BLACK
     }
 
-
+    //ensures a move doesn't put the king in check
     public boolean isValid(ChessMove move){
         var pretendGame = copy();
+        //passing in color instead of team allows checking for check when it's not your turn
         var color = pretendGame.chessBoard.getPiece(move.startPosition).pieceColor;
         pretendGame.chessBoard.makeMove(move);
         return !pretendGame.isInCheck(color);
@@ -104,18 +105,16 @@ public class ChessGame {
         setTeamTurn(newTeam);
     }
 
-    public ChessPosition findKing(TeamColor teamColor){
-        for (int i = 1; i<=8; i++ ){
-            for (int j = 1; j <=8; j++){
-                var piece = chessBoard.getPiece(new ChessPosition(i,j));
-                if (piece!= null && piece.type== ChessPiece.PieceType.KING && piece.pieceColor==teamColor){
-                    return new ChessPosition(i,j);
-                }
+
+    public boolean pieceAttacksKing(ChessPiece piece, ChessPosition piecePosition, ChessPosition kingPosition){
+        var set = piece.pieceMoves(chessBoard,piecePosition);
+        for (ChessMove move: set){
+            if (move.getEndPosition().row ==kingPosition.row && move.getEndPosition().col ==kingPosition.col){
+                return true;
             }
         }
-        return new ChessPosition(0,0);
+        return false;
     }
-
 
     public boolean opposingPiecesAttackKing(ChessPosition kingPosition,TeamColor teamColor ){
         for (int i = 1; i <= 8; i++){
@@ -131,14 +130,16 @@ public class ChessGame {
         return false;
     }
 
-    public boolean pieceAttacksKing(ChessPiece piece, ChessPosition piecePosition, ChessPosition kingPosition){
-        var set = piece.pieceMoves(chessBoard,piecePosition);
-        for (ChessMove move: set){
-            if (move.getEndPosition().row ==kingPosition.row && move.getEndPosition().col ==kingPosition.col){
-                return true;
+    public ChessPosition findKing(TeamColor teamColor){
+        for (int i = 1; i<=8; i++ ){
+            for (int j = 1; j <=8; j++){
+                var piece = chessBoard.getPiece(new ChessPosition(i,j));
+                if (piece!= null && piece.type== ChessPiece.PieceType.KING && piece.pieceColor==teamColor){
+                    return new ChessPosition(i,j);
+                }
             }
         }
-        return false;
+        return new ChessPosition(0,0);
     }
 
     /**
@@ -153,6 +154,12 @@ public class ChessGame {
         return opposingPiecesAttackKing(pos,teamColor);
     }
 
+    /**
+     * Determines if the given team has no legal moves
+     *
+     * @param teamColor which team to check for hasNoMoves
+     * @return True if the specified team has no legal moves
+     */
     public boolean hasNoMoves(TeamColor teamColor){
         for (int i = 1; i <= 8; i++){
             for (int j = 1; j <= 8; j++){
