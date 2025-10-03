@@ -103,6 +103,9 @@ public class ChessGame {
         setTeamTurn(newTeam);
     }
 
+    /**
+     * Loops through moves of enemy piece to see if it can attack king
+     */
 
     public boolean pieceAttacksKing(ChessPiece piece, ChessPosition piecePosition, ChessPosition kingPosition){
         var set = piece.pieceMoves(chessBoard,piecePosition);
@@ -113,6 +116,10 @@ public class ChessGame {
         }
         return false;
     }
+
+    /**
+     * Loops through board, checking if any opposing pieces can move to the square where the king is
+     */
 
     public boolean opposingPiecesAttackKing(ChessPosition kingPosition,TeamColor teamColor ){
         for (int i = 1; i <= 8; i++){
