@@ -30,8 +30,8 @@ public class PawnMoves {
         if (color == BLACK){
             change = -1;
         }
-        var new_pos = new ChessPosition(pos.row+change, pos.col);
-        if (isValid(new_pos) && board.getPiece(new_pos) == null){
+        var newPos = new ChessPosition(pos.row+change, pos.col);
+        if (isValid(newPos) && board.getPiece(newPos) == null){
             addMoves(pos, new ChessPosition(pos.row+change, pos.col),color);
         }
     }
@@ -41,9 +41,9 @@ public class PawnMoves {
         if (color == BLACK){
             change = -1;
         }
-        var new_pos1 = new ChessPosition(pos.row+change, pos.col);
-        var new_pos2 = new ChessPosition(pos.row+change*2, pos.col);
-        if (board.getPiece(new_pos1) == null && board.getPiece(new_pos2) ==null){
+        var newPos1 = new ChessPosition(pos.row+change, pos.col);
+        var newPos2 = new ChessPosition(pos.row+change*2, pos.col);
+        if (board.getPiece(newPos1) == null && board.getPiece(newPos2) ==null){
             addMoves(pos, new ChessPosition(pos.row+change*2, pos.col),color);
         }
     }
