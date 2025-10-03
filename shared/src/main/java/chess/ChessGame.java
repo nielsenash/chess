@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
-import static chess.ChessPiece.PieceType.QUEEN;
+import static chess.ChessGame.TeamColor.WHITE;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -14,12 +14,23 @@ import static chess.ChessPiece.PieceType.QUEEN;
  */
 public class ChessGame {
 
-    private TeamColor team = TeamColor.WHITE;
+    private TeamColor team = WHITE;
     private ChessBoard chessBoard;
 
     public ChessGame(){
         this.chessBoard = new ChessBoard();
         this.chessBoard.resetBoard();
+    }
+
+    public ChessGame copy(){
+        var newGame = new ChessGame();
+        for (int i = 0; i <=7; i++){
+            for (int j = 0; j <=7; j++){
+                newGame.chessBoard.board[i][j] = this.chessBoard.board[i][j];
+            }
+        }
+        newGame.team=this.team;
+        return newGame;
     }
 
     /**
@@ -48,7 +59,10 @@ public class ChessGame {
 
 
     public boolean isValid(ChessMove move){
-        return true; //doesn't put you in check
+        var pretendGame = copy();
+        var color = pretendGame.chessBoard.getPiece(move.startPosition).pieceColor;
+        pretendGame.chessBoard.makeMove(move);
+        return !pretendGame.isInCheck(color);
     }
 
     /**
@@ -58,7 +72,6 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-
 
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         var piece = chessBoard.getPiece(startPosition);
@@ -80,18 +93,16 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        //if it doesn't put your own king in check:
-        var piece = chessBoard.getPiece(move.startPosition);
-        if (piece!=null){
-            chessBoard.removePiece(move.startPosition);
-            chessBoard.addPiece(move.endPosition, piece);
+        if (!validMoves(move.startPosition).contains(move)){
+            throw new InvalidMoveException("Invalid Move");
         }
-        var newTeam = team==TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE;
+        else if (chessBoard.getPiece(move.startPosition).pieceColor!=team){
+            throw new InvalidMoveException("Not your team's turn!");
+        }
+        chessBoard.makeMove(move);
+        var newTeam = team == WHITE ? TeamColor.BLACK : WHITE;
         setTeamTurn(newTeam);
-//        System.out.println(chessBoard.toString());
     }
-
-
 
     public ChessPosition findKing(TeamColor teamColor){
         for (int i = 1; i<=8; i++ ){
@@ -139,8 +150,23 @@ public class ChessGame {
 
     public boolean isInCheck(TeamColor teamColor) {
         var pos = findKing(teamColor);
-        var isinCheck = opposingPiecesAttackKing(pos,teamColor);
-        return isinCheck;
+        return opposingPiecesAttackKing(pos,teamColor);
+    }
+
+    public boolean hasNoMoves(TeamColor teamColor){
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
+                var piece = chessBoard.getPiece(new ChessPosition(i,j));
+                if (piece!= null && piece.pieceColor == teamColor){
+//                    System.out.println(piece);
+//                    System.out.println(validMoves(new ChessPosition(i,j)));
+                    if (!validMoves(new ChessPosition(i,j)).isEmpty()){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -150,7 +176,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return false; // isInCheck(teamColor) && nobody has moves
+        return (isInCheck(teamColor) && hasNoMoves(teamColor));
     }
 
     /**
@@ -161,7 +187,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return false; // !isInCheck(teamColor) && nobody has moves
+        return (!isInCheck(teamColor) && hasNoMoves(teamColor));
     }
 
     /**

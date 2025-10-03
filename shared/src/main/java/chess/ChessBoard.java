@@ -34,6 +34,18 @@ public class ChessBoard {
         board[position.getRow()-1][position.getColumn()-1] = null;
     }
 
+    public void makeMove(ChessMove move){
+        var piece = getPiece(move.startPosition);
+        if (piece != null) {
+            removePiece(move.startPosition);
+            if (move.promotionPiece != null) {
+                addPiece(move.endPosition, new ChessPiece(piece.pieceColor, move.promotionPiece));
+            } else {
+                addPiece(move.endPosition, piece);
+            }
+        }
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
