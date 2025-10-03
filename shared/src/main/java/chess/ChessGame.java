@@ -25,9 +25,7 @@ public class ChessGame {
     public ChessGame copy(){
         var newGame = new ChessGame();
         for (int i = 0; i <=7; i++){
-            for (int j = 0; j <=7; j++){
-                newGame.chessBoard.board[i][j] = this.chessBoard.board[i][j];
-            }
+            System.arraycopy(this.chessBoard.board[i], 0, newGame.chessBoard.board[i], 0, 8);
         }
         newGame.team=this.team;
         return newGame;
