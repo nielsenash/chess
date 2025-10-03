@@ -2,10 +2,10 @@ package chess;
 
 import java.util.HashSet;
 
-public interface RepeatedMoves {
+public interface MoveGenerator {
 
     default void calculateMoves(ChessBoard board, ChessPosition pos, ChessGame.TeamColor color,
-                                int xChange, int yChange, HashSet<ChessMove> set){
+                                int xChange, int yChange, HashSet<ChessMove> set, boolean repeats){
 
         int x = pos.getRow() + xChange;
         int y = pos.getColumn() + yChange;
@@ -19,6 +19,9 @@ public interface RepeatedMoves {
                 if (board.getPiece(newPos) != null && board.getPiece(newPos).pieceColor!=color){
                     break;
                 }
+            }
+            if (!repeats){
+                break;
             }
             x+= xChange;
             y+= yChange;

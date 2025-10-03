@@ -57,8 +57,8 @@ public class ChessPiece {
             case BISHOP -> new BishopMoves().returnMoves(board,myPosition, pieceColor);
             case ROOK ->  new RookMoves().returnMoves(board,myPosition, pieceColor);
             case KNIGHT ->  new KnightMoves().returnMoves(board,myPosition, pieceColor);
-            case QUEEN ->  new QueenMoves().returnMoves(board,myPosition, pieceColor);
-            case KING -> new KingMoves().returnMoves(board,myPosition, pieceColor);
+            case QUEEN ->  new KingAndQueenMoves().returnMoves(board,myPosition, pieceColor, true);
+            case KING -> new KingAndQueenMoves().returnMoves(board,myPosition, pieceColor, false);
             case PAWN ->  new PawnMoves().returnMoves(board,myPosition, pieceColor);
         };
     }
