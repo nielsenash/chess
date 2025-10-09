@@ -1,7 +1,10 @@
 package server;
 
+import com.google.gson.Gson;
 import io.javalin.*;
 import io.javalin.http.Context;
+
+import java.util.Map;
 
 public class Server {
 
@@ -16,7 +19,11 @@ public class Server {
 
     }
     private void register(Context ctx){
-        ctx.result("{\"username\":\"ashley\",\"authToken\":\"123\"}");
+        var serializer = new Gson();
+        var request = serializer.fromJson(ctx.body(), Map.class);
+        request.put("authToken", "1234");
+        var response = serializer.toJson(request);
+        ctx.result(response);
     }
 
     public int run(int desiredPort) {
