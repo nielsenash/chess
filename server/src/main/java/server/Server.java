@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.UserDataAccess;
 import io.javalin.*;
 import io.javalin.http.Context;
-import model.User;
+import model.UserData;
 import service.UserService;
 
 public class Server {
@@ -22,10 +22,11 @@ public class Server {
 
     private void register(Context ctx) {
         var serializer = new Gson();
-        var request = serializer.fromJson(ctx.body(), User.class);
+        var request = serializer.fromJson(ctx.body(), UserData.class);
         var response = userService.register(request);
         ctx.result(serializer.toJson(response));
     }
+
 
     public int run(int desiredPort) {
         server.start(desiredPort);

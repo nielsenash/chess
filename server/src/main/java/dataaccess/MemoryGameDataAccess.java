@@ -1,28 +1,43 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.GameInfo;
+import model.GameData;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class MemoryGameDataAccess implements GameDataAccess {
-    ArrayList<GameInfo> games = new ArrayList<GameInfo>();
+    private final HashMap<Integer, GameData> games = new HashMap<>();
 
     @Override
-    public List<GameInfo> listGames() {
+    public void clear() {
+        games.clear();
+    }
+
+    @Override
+    public HashMap<Integer, GameData> listGames() {
         return games;
     }
 
     @Override
     public void createGame(String gameName) {
-        var id = Integer.toString(games.size());
-        var game = new GameInfo(id, null, null, gameName);
-        games.add(game);
+        var id = games.size();
+        var chessGame = new ChessGame();
+        var gameData = new GameData(id, null, null, gameName, chessGame);
+        games.put(id, gameData);
     }
 
     @Override
     public void joinGame(ChessGame.TeamColor playerColor, String gameName) {
+        ;
+    }
 
+    @Override
+    public GameData getGame(Integer gameId) {
+        return games.get(gameId);
+    }
+
+    @Override
+    public void updateGame(Integer gameId, GameData gameData) {
+        games.put(gameId, gameData);
     }
 }

@@ -1,8 +1,8 @@
 package service;
 
 import dataaccess.UserDataAccess;
-import model.RegistrationResult;
-import model.User;
+import model.AuthData;
+import model.UserData;
 
 import java.util.UUID;
 
@@ -18,9 +18,9 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public RegistrationResult register(User user) {
+    public AuthData register(UserData user) {
         userDataAccess.saveUser(user);
-        return new RegistrationResult(user.username(), getAuthToken());
+        return new AuthData(user.username(), getAuthToken());
     }
 
     public void login(String username, String password) {

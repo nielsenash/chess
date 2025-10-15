@@ -1,14 +1,20 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.GameInfo;
+import model.GameData;
 
-import java.util.List;
+import java.util.HashMap;
 
 public interface GameDataAccess {
-    List<GameInfo> listGames();
+    void clear();
+
+    HashMap<Integer, GameData> listGames();
 
     void createGame(String gameName);
 
     void joinGame(ChessGame.TeamColor playerColor, String gameName);
+
+    GameData getGame(Integer gameId);
+
+    void updateGame(Integer gameId, GameData gameData);
 }
