@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaccess.*;
 import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
@@ -42,6 +43,9 @@ public class Server {
             var response = userService.register(request);
             authService.saveAuthData(response);
             ctx.json(serializer.toJson(response));
+        } catch (BadRequestException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (AlreadyTakenException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));

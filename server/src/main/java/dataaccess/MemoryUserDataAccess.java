@@ -13,12 +13,15 @@ public class MemoryUserDataAccess implements UserDataAccess {
     }
 
     @Override
-    public boolean saveUser(UserData user) {
+    public int saveUser(UserData user) {
+        if (user.username() == null || user.password() == null || user.email() == null) {
+            return 401;
+        }
         if (!users.containsKey(user.username())) {
             users.put(user.username(), user);
-            return true;
+            return 200;
         }
-        return false;
+        return 403;
     }
 
     @Override

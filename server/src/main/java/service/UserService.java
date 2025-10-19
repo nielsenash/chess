@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.UserDataAccess;
 import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
@@ -22,8 +23,10 @@ public class UserService {
 
 
     public AuthData register(UserData user) throws Exception {
-        if (this.userDataAccess.saveUser(user)) {
+        if (this.userDataAccess.saveUser(user) == 200) {
             return new AuthData(getAuthToken(), user.username());
+        } else if (this.userDataAccess.saveUser(user) == 401) {
+            throw new BadRequestException("Error: bad request");
         } else {
             throw new AlreadyTakenException("Error: already taken");
         }
