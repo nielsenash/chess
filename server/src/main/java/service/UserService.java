@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.UserDataAccess;
+import exceptions.AlreadyTakenException;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
@@ -21,9 +22,11 @@ public class UserService {
 
 
     public AuthData register(UserData user) throws Exception {
-        //somewhere check if username is already registered
-        this.userDataAccess.saveUser(user);
-        return new AuthData(getAuthToken(), user.username());
+        if (this.userDataAccess.saveUser(user)) {
+            return new AuthData(getAuthToken(), user.username());
+        } else {
+            throw new AlreadyTakenException("Error: already taken");
+        }
     }
 
     public void login(LoginRequest loginRequest) throws Exception {

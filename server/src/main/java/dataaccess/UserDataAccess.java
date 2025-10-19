@@ -5,7 +5,7 @@ import model.UserData;
 public interface UserDataAccess {
     void clear();
 
-    void saveUser(UserData user);
+    boolean saveUser(UserData user);
 
     UserData getUser(String userName);
 
