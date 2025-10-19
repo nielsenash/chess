@@ -1,30 +1,64 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.UserDataAccess;
+import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
+import service.AuthService;
+import service.GameService;
 import service.UserService;
 
 public class Server {
 
     private final Javalin server;
-    private UserDataAccess userDataAccess;
+    private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
     private final UserService userService = new UserService(userDataAccess);
+    private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
+    private final GameService gameService = new GameService(gameDataAccess);
+    private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+    private final AuthService authService = new AuthService(authDataAccess);
+
 
     public Server() {
         server = Javalin.create(config -> config.staticFiles.add("web"));
         // Register your endpoints and exception handlers here.
+
         server.delete("db", ctx -> ctx.result("{}"));
         server.post("user", this::register);
+        server.post("session", this::login);
+        server.delete("session", this::logout);
+        server.get("game", this::listGames);
+        server.post("game", this::createGame);
+        server.put("game", this::joinGame);
+
     }
 
     private void register(Context ctx) {
         var serializer = new Gson();
         var request = serializer.fromJson(ctx.body(), UserData.class);
-        var response = userService.register(request);
-        ctx.result(serializer.toJson(response));
+        try {
+            var response = userService.register(request);
+            authService.saveAuthData(response);
+            ctx.json(serializer.toJson(response));
+        } catch (Exception e) {
+            ;
+        }
+    }
+
+    private void login(Context ctx) {
+    }
+
+    private void logout(Context ctx) {
+    }
+
+    private void listGames(Context ctx) {
+    }
+
+    private void createGame(Context ctx) {
+    }
+
+    private void joinGame(Context ctx) {
     }
 
 

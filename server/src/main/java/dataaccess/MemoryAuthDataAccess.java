@@ -22,6 +22,10 @@ public class MemoryAuthDataAccess implements AuthDataAccess {
         return authTokens.get(authToken);
     }
 
+    public HashMap<String, AuthData> getAuthTokens() {
+        return authTokens;
+    }
+
     @Override
     public void deleteAuth(String authToken) {
         authTokens.remove(authToken);
