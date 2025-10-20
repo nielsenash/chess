@@ -28,7 +28,7 @@ public class Server {
         server = Javalin.create(config -> config.staticFiles.add("web"));
         // Register your endpoints and exception handlers here.
 
-        server.delete("db", ctx -> ctx.result("{}"));
+        server.delete("db", this::clear);
         server.post("user", this::register);
         server.post("session", this::login);
         server.delete("session", this::logout);
@@ -36,6 +36,13 @@ public class Server {
         server.post("game", this::createGame);
         server.put("game", this::joinGame);
 
+    }
+
+    private void clear(Context ctx) {
+        authService.clearAuthDatabase();
+        userService.clearUserDatabase();
+        gameService.clearGameDatabase();
+        ctx.result("{}");
     }
 
     private void register(Context ctx) {
@@ -78,6 +85,17 @@ public class Server {
     }
 
     private void logout(Context ctx) {
+        var serializer = new Gson();
+        var auth = ctx.header("authorization");
+        try {
+            authService.logout(auth);
+            ctx.result("{}");
+        } catch (UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (Exception e) {
+            //do stuff
+        }
     }
 
     private void listGames(Context ctx) {

@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AuthDataAccess;
+import exceptions.UnauthorizedException;
 import model.AuthData;
 
 public class AuthService {
@@ -12,6 +13,18 @@ public class AuthService {
 
     public void saveAuthData(AuthData authData) {
         authDataAccess.saveAuth(authData);
+    }
+
+    public void logout(String authToken) throws Exception {
+        if (authDataAccess.getAuth(authToken) != null) {
+            authDataAccess.deleteAuth(authToken);
+        } else {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+    }
+
+    public void clearAuthDatabase() {
+        authDataAccess.clear();
     }
 
 }

@@ -44,7 +44,7 @@ public class UserService {
         }
     }
 
-    public void logout() {
-
+    public void clearUserDatabase() {
+        userDataAccess.clear();
     }
 }

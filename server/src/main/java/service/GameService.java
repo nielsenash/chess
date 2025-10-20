@@ -8,4 +8,8 @@ public class GameService {
     public GameService(GameDataAccess gameDataAccess) {
         this.gameDataAccess = gameDataAccess;
     }
+
+    public void clearGameDatabase() {
+        gameDataAccess.clear();
+    }
 }
