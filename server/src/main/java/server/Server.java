@@ -6,6 +6,7 @@ import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import io.javalin.*;
 import io.javalin.http.Context;
+import model.LoginRequest;
 import model.UserData;
 import service.AuthService;
 import service.GameService;
@@ -55,6 +56,21 @@ public class Server {
     }
 
     private void login(Context ctx) {
+        var serializer = new Gson();
+        var request = serializer.fromJson(ctx.body(), LoginRequest.class);
+        try {
+            var response = userService.login(request);
+            authService.saveAuthData(response);
+            ctx.json(serializer.toJson(response));
+        } catch (BadRequestException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (AlreadyTakenException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (Exception e) {
+            //do stuff
+        }
     }
 
     private void logout(Context ctx) {

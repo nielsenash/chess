@@ -32,12 +32,13 @@ public class UserService {
         }
     }
 
-    public void login(LoginRequest loginRequest) throws Exception {
-        var user = userDataAccess.getUser(loginRequest.userName());
-        if (user == null || !user.password().equals(loginRequest.passWord())) {
-            throw new Exception("Incorrect username and/or password");
+    public AuthData login(LoginRequest loginRequest) throws Exception {
+        var user = userDataAccess.getUser(loginRequest.username());
+        if (user == null || !user.password().equals(loginRequest.password())) {
+            throw new BadRequestException("Error: bad request");
+        } else {
+            return new AuthData(getAuthToken(), user.username());
         }
-
     }
 
     public void logout() {

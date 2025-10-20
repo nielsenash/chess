@@ -13,4 +13,5 @@ public class AuthService {
     public void saveAuthData(AuthData authData) {
         authDataAccess.saveAuth(authData);
     }
+
 }
