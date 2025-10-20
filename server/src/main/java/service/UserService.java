@@ -3,6 +3,7 @@ package service;
 import dataaccess.UserDataAccess;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
@@ -34,8 +35,10 @@ public class UserService {
 
     public AuthData login(LoginRequest loginRequest) throws Exception {
         var user = userDataAccess.getUser(loginRequest.username());
-        if (user == null || !user.password().equals(loginRequest.password())) {
+        if (loginRequest.username() == null || loginRequest.password() == null) {
             throw new BadRequestException("Error: bad request");
+        } else if (user == null || !user.password().equals(loginRequest.password())) {
+            throw new UnauthorizedException("Error: unauthorized");
         } else {
             return new AuthData(getAuthToken(), user.username());
         }

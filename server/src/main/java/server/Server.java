@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import dataaccess.*;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.LoginRequest;
@@ -66,6 +67,9 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (AlreadyTakenException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
