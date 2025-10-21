@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.GameDataAccess;
+import exceptions.BadRequestException;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -20,7 +21,11 @@ public class GameService {
         return gameDataAccess.listGames();
     }
 
-    public GameData createGame(String gameName) {
-        return gameDataAccess.createGame(gameName);
+    public GameData createGame(String gameName) throws Exception {
+        var gameData = gameDataAccess.createGame(gameName);
+        if (gameData.gameName() == null) {
+            throw new BadRequestException("Error: Bad Request");
+        }
+        return gameData;
     }
 }
