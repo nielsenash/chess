@@ -7,6 +7,8 @@ import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
+import model.CreateGameRequest;
+import model.CreateGameResponse;
 import model.LoginRequest;
 import model.UserData;
 import service.AuthService;
@@ -99,9 +101,38 @@ public class Server {
     }
 
     private void listGames(Context ctx) {
+        var serializer = new Gson();
+        var auth = ctx.header("authorization");
+        try {
+            authService.getAuthData(auth);
+            var response = gameService.listGames();
+            ctx.json(response);
+        } catch (UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (Exception e) {
+            //do stuff
+        }
     }
 
     private void createGame(Context ctx) {
+        var serializer = new Gson();
+        var auth = ctx.header("authorization");
+        var request = serializer.fromJson(ctx.body(), CreateGameRequest.class);
+        try {
+            authService.getAuthData(auth);
+            var game = gameService.createGame(request.gameName());
+            var response = new CreateGameResponse(game.gameID());
+            ctx.json(serializer.toJson(response));
+        } catch (BadRequestException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (Exception e) {
+            //do stuff
+        }
     }
 
     private void joinGame(Context ctx) {

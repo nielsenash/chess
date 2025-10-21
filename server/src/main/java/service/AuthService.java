@@ -16,11 +16,15 @@ public class AuthService {
     }
 
     public void logout(String authToken) throws Exception {
-        if (authDataAccess.getAuth(authToken) != null) {
+        if (getAuthData(authToken) != null) {
             authDataAccess.deleteAuth(authToken);
         } else {
             throw new UnauthorizedException("Error: unauthorized");
         }
+    }
+
+    public AuthData getAuthData(String authToken) {
+        return authDataAccess.getAuth(authToken);
     }
 
     public void clearAuthDatabase() {

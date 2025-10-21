@@ -3,10 +3,13 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MemoryGameDataAccess implements GameDataAccess {
     private final HashMap<Integer, GameData> games = new HashMap<>();
+    private final ArrayList<GameData> gamesList = new ArrayList<>();
+    private int gameId = 1;
 
     @Override
     public void clear() {
@@ -14,16 +17,19 @@ public class MemoryGameDataAccess implements GameDataAccess {
     }
 
     @Override
-    public HashMap<Integer, GameData> listGames() {
-        return games;
+    public ArrayList<GameData> listGames() {
+        return gamesList;
     }
 
     @Override
-    public void createGame(String gameName) {
-        var id = games.size();
+    public GameData createGame(String gameName) {
+        var id = gameId;
         var chessGame = new ChessGame();
         var gameData = new GameData(id, null, null, gameName, chessGame);
         games.put(id, gameData);
+        gamesList.add(gameData);
+        gameId++;
+        return gameData;
     }
 
     @Override
