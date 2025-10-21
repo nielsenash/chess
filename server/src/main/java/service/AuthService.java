@@ -23,8 +23,12 @@ public class AuthService {
         }
     }
 
-    public AuthData getAuthData(String authToken) {
-        return authDataAccess.getAuth(authToken);
+    public AuthData getAuthData(String authToken) throws Exception {
+        var authData = authDataAccess.getAuth(authToken);
+        if (authData == null) {
+            throw new UnauthorizedException("Error: unauthorized");
+        }
+        return authData;
     }
 
     public void clearAuthDatabase() {
