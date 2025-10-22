@@ -57,8 +57,9 @@ public class MemoryGameDataAccess implements GameDataAccess {
         for (GameData data : gamesList) {
             if ((data.gameID().equals(gameID))) {
                 gamesList.remove(data);
+                gamesList.add(gameData);
             }
         }
-        gamesList.add(gameData);
+
     }
 }
