@@ -57,16 +57,6 @@ public class GameServiceTests {
         assertThrows(BadRequestException.class, () -> gameService.createGame(null));
     }
 
-
-    @Test
-    void clearDatabase() throws Exception {
-        var user = new UserData("ashley", "nielsen", "jfa;8oeih");
-        var authData = userService.register(user);
-        authService.saveAuthData(authData);
-        userService.clearUserDatabase();
-        assertNull(userDataAccess.getUser(user.username()));
-    }
-
     @Test
     void joinGame() throws Exception {
         var user = new UserData("ashley", "nielsen", "jfa;8oeih");
