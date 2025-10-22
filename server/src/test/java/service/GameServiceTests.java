@@ -3,15 +3,14 @@ package service;
 import dataaccess.MemoryAuthDataAccess;
 import dataaccess.MemoryGameDataAccess;
 import dataaccess.MemoryUserDataAccess;
+import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
-import model.LoginRequest;
 import model.UserData;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static chess.ChessGame.TeamColor.WHITE;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {
     MemoryAuthDataAccess authDataAccess = new MemoryAuthDataAccess();
@@ -33,6 +32,15 @@ public class GameServiceTests {
     }
 
     @Test
+    void listGamesUnauthorized() throws Exception {
+        var user = new UserData("ashley", "nielsen", "jfa;8oeih");
+        var authData = userService.register(user);
+        authService.saveAuthData(authData);
+        assertThrows(UnauthorizedException.class, () -> authService.getAuthData("def not the authToken"));
+        gameService.listGames();
+    }
+
+    @Test
     void createGame() throws Exception {
         var user = new UserData("ashley", "nielsen", "jfa;8oeih");
         var authData = userService.register(user);
@@ -42,31 +50,13 @@ public class GameServiceTests {
     }
 
     @Test
-    void badRegister() throws Exception {
-        var user = new UserData("ashley", null, "jfa;8oeih");
-        Assertions.assertThrows(BadRequestException.class, () -> userService.register(user));
-    }
-
-    @Test
-    void login() throws Exception {
+    void createGameBadRequest() throws Exception {
         var user = new UserData("ashley", "nielsen", "jfa;8oeih");
         var authData = userService.register(user);
         authService.saveAuthData(authData);
-        var user2 = new LoginRequest("ashley", "nielsen");
-        var authData2 = userService.login(user2);
-        authService.saveAuthData(authData2);
-        assertNotNull(userDataAccess.getUser(user.username()));
-        assertNotNull(authDataAccess.getAuthTokens());
+        assertThrows(BadRequestException.class, () -> gameService.createGame(null));
     }
 
-    @Test
-    void unauthorizedLogin() throws Exception {
-        var user = new UserData("ashley", "nielsen", "jfa;8oeih");
-        var authData = userService.register(user);
-        authService.saveAuthData(authData);
-        var loginRequest = new LoginRequest("ashley", "ashley");
-        Assertions.assertThrows(UnauthorizedException.class, () -> userService.login(loginRequest));
-    }
 
     @Test
     void clearDatabase() throws Exception {
@@ -76,4 +66,29 @@ public class GameServiceTests {
         userService.clearUserDatabase();
         assertNull(userDataAccess.getUser(user.username()));
     }
+
+    @Test
+    void joinGame() throws Exception {
+        var user = new UserData("ashley", "nielsen", "jfa;8oeih");
+        var authData = userService.register(user);
+        authService.saveAuthData(authData);
+        gameService.createGame("name");
+        gameService.joinGame(WHITE, 1, user.username());
+        assertNotNull(gameService.listGames());
+    }
+
+    @Test
+    void joinGameAlreadyTaken() throws Exception {
+        var user = new UserData("ashley", "nielsen", "jfa;8oeih");
+        var authData = userService.register(user);
+        authService.saveAuthData(authData);
+        var user2 = new UserData("andrew", "a;oeihta", "eoiathb");
+        var authData2 = userService.register(user2);
+        authService.saveAuthData(authData2);
+        gameService.createGame("name");
+        gameService.joinGame(WHITE, 1, user.username());
+        assertThrows(AlreadyTakenException.class, () -> gameService.joinGame(WHITE, 1, user2.username()));
+    }
+
+
 }
