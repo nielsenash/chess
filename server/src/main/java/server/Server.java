@@ -148,6 +148,9 @@ public class Server {
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (AlreadyTakenException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
             //do stuff
         }

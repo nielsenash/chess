@@ -12,7 +12,7 @@ public interface GameDataAccess {
 
     GameData createGame(String gameName);
 
-    void joinGame(ChessGame.TeamColor playerColor, int gameID, String username);
+    void joinGame(ChessGame.TeamColor playerColor, Integer gameID, String username);
 
     GameData getGame(Integer gameId);
 
