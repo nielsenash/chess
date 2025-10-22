@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.GameDataAccess;
 import exceptions.BadRequestException;
 import model.GameData;
@@ -28,4 +29,9 @@ public class GameService {
         }
         return gameData;
     }
+
+    public void joinGame(ChessGame.TeamColor playerColor, int gameID, String username) throws Exception {
+        gameDataAccess.joinGame(playerColor, gameID, username);
+    }
+
 }

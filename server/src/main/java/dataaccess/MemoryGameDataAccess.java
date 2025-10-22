@@ -6,6 +6,9 @@ import model.GameData;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 public class MemoryGameDataAccess implements GameDataAccess {
     private final HashMap<Integer, GameData> games = new HashMap<>();
     private final ArrayList<GameData> gamesList = new ArrayList<>();
@@ -14,6 +17,7 @@ public class MemoryGameDataAccess implements GameDataAccess {
     @Override
     public void clear() {
         games.clear();
+        gamesList.clear();
     }
 
     @Override
@@ -33,17 +37,21 @@ public class MemoryGameDataAccess implements GameDataAccess {
     }
 
     @Override
-    public void joinGame(ChessGame.TeamColor playerColor, String gameName) {
-        ;
+    public void joinGame(ChessGame.TeamColor playerColor, int gameID, String username) {
+        var gameData = getGame(gameID);
+        var whiteUsername = playerColor == WHITE ? username : gameData.whiteUsername();
+        var blackUsername = playerColor == BLACK ? username : gameData.blackUsername();
+        var newGameData = new GameData(gameData.gameID(), whiteUsername, blackUsername, gameData.gameName(), gameData.game());
+        updateGame(gameID, newGameData);
     }
 
     @Override
-    public GameData getGame(Integer gameId) {
-        return games.get(gameId);
+    public GameData getGame(Integer gameID) {
+        return games.get(gameID);
     }
 
     @Override
-    public void updateGame(Integer gameId, GameData gameData) {
-        games.put(gameId, gameData);
+    public void updateGame(Integer gameID, GameData gameData) {
+        games.put(gameID, gameData);
     }
 }

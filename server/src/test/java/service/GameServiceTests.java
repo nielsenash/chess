@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.MemoryAuthDataAccess;
+import dataaccess.MemoryGameDataAccess;
 import dataaccess.MemoryUserDataAccess;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
@@ -12,21 +13,32 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-public class UserServiceTests {
-
+public class GameServiceTests {
     MemoryAuthDataAccess authDataAccess = new MemoryAuthDataAccess();
     MemoryUserDataAccess userDataAccess = new MemoryUserDataAccess();
+    MemoryGameDataAccess gameDataAccess = new MemoryGameDataAccess();
     UserService userService = new UserService(userDataAccess);
     AuthService authService = new AuthService(authDataAccess);
+    GameService gameService = new GameService(gameDataAccess);
 
     @Test
-    void register() throws Exception {
+    void listGames() throws Exception {
         var user = new UserData("ashley", "nielsen", "jfa;8oeih");
         var authData = userService.register(user);
         authService.saveAuthData(authData);
-        assertNotNull(userDataAccess.getUser(user.username()));
-        assertNotNull(authDataAccess.getAuthTokens());
+        gameService.createGame("newGame");
+        gameService.createGame("newGame2");
+        assertNotNull(gameService.listGames());
+        System.out.println(gameService.listGames());
+    }
+
+    @Test
+    void createGame() throws Exception {
+        var user = new UserData("ashley", "nielsen", "jfa;8oeih");
+        var authData = userService.register(user);
+        authService.saveAuthData(authData);
+        gameService.createGame("newGame");
+        assertNotNull(gameService.listGames());
     }
 
     @Test
@@ -65,4 +77,3 @@ public class UserServiceTests {
         assertNull(userDataAccess.getUser(user.username()));
     }
 }
-

@@ -7,13 +7,12 @@ import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
-import model.CreateGameRequest;
-import model.CreateGameResponse;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
+
+import java.util.Map;
 
 public class Server {
 
@@ -106,7 +105,7 @@ public class Server {
         try {
             authService.getAuthData(auth);
             var response = gameService.listGames();
-            ctx.json(response);
+            ctx.json(serializer.toJson(Map.of("games", response)));
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
@@ -136,6 +135,22 @@ public class Server {
     }
 
     private void joinGame(Context ctx) {
+        var serializer = new Gson();
+        var auth = ctx.header("authorization");
+        var request = serializer.fromJson(ctx.body(), JoinGameRequest.class);
+        try {
+            var authData = authService.getAuthData(auth);
+            gameService.joinGame(request.playerColor(), request.gameID(), authData.username());
+            ctx.result("{}");
+        } catch (BadRequestException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (UnauthorizedException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (Exception e) {
+            //do stuff
+        }
     }
 
 
