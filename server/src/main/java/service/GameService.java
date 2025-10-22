@@ -31,6 +31,9 @@ public class GameService {
     }
 
     public void joinGame(ChessGame.TeamColor playerColor, int gameID, String username) throws Exception {
+        if (playerColor == null) {
+            throw new BadRequestException("Error: Bad Request");
+        }
         gameDataAccess.joinGame(playerColor, gameID, username);
     }
 
