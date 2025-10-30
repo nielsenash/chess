@@ -9,6 +9,15 @@ public class DatabaseManager {
     private static String dbPassword;
     private static String connectionUrl;
 
+    public static void main(String[] args) {
+        try {
+            createDatabase();
+        } catch (DataAccessException e) {
+            ;
+        }
+
+    }
+
     /*
      * Load the database information for the db.properties file.
      */
@@ -16,24 +25,16 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    public static void main(String[] args) {
-        try {
-            example();
-        } catch (Exception e) {
-            ;
-        }
 
-    }
-
-    public static void example() throws Exception {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));
-            }
-        }
-    }
+//    public static void example() throws Exception {
+//        try (var conn = DatabaseManager.getConnection()) {
+//            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
+//                var rs = preparedStatement.executeQuery();
+//                rs.next();
+//                System.out.println(rs.getInt(1));
+//            }
+//        }
+//    }
 
 
     /**

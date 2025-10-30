@@ -9,8 +9,8 @@ public class SqlUserDataAccess implements UserDataAccess {
     }
 
     @Override
-    public int saveUser(UserData user) {
-        return 0;
+    public UserData saveUser(UserData user) {
+        return null;
     }
 
     @Override
