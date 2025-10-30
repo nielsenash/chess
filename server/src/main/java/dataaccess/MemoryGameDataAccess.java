@@ -11,18 +11,16 @@ import static chess.ChessGame.TeamColor.WHITE;
 
 public class MemoryGameDataAccess implements GameDataAccess {
     private final HashMap<Integer, GameData> games = new HashMap<>();
-    private final ArrayList<GameData> gamesList = new ArrayList<>();
     private Integer gameId = 1;
 
     @Override
     public void clear() {
         games.clear();
-        gamesList.clear();
     }
 
     @Override
     public ArrayList<GameData> listGames() {
-        return gamesList;
+        return new ArrayList<>(games.values());
     }
 
     @Override
@@ -31,7 +29,6 @@ public class MemoryGameDataAccess implements GameDataAccess {
         var chessGame = new ChessGame();
         var gameData = new GameData(id, null, null, gameName, chessGame);
         games.put(id, gameData);
-        gamesList.add(gameData);
         gameId++;
         return gameData;
     }
@@ -53,12 +50,5 @@ public class MemoryGameDataAccess implements GameDataAccess {
     @Override
     public void updateGame(Integer gameID, GameData gameData) {
         games.put(gameID, gameData);
-        for (GameData data : gamesList) {
-            if ((data.gameID().equals(gameID))) {
-                gamesList.remove(data);
-                gamesList.add(gameData);
-            }
-        }
-
     }
 }

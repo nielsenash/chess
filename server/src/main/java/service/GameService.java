@@ -6,7 +6,8 @@ import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import model.GameData;
 
-import java.util.ArrayList;
+import java.util.Collection;
+
 
 public class GameService {
     private final GameDataAccess gameDataAccess;
@@ -19,7 +20,7 @@ public class GameService {
         gameDataAccess.clear();
     }
 
-    public ArrayList<GameData> listGames() {
+    public Collection<GameData> listGames() {
         return gameDataAccess.listGames();
     }
 
