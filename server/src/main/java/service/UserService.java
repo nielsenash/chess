@@ -7,6 +7,7 @@ import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.UUID;
 
@@ -22,11 +23,18 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
+    public String getHashedPassword(String password) {
+        return BCrypt.hashpw(password, BCrypt.gensalt());
+    }
+
 
     public AuthData register(UserData user) throws Exception {
         if (user.username() == null || user.password() == null || user.email() == null) {
             throw new BadRequestException("Error: bad request");
-        } else if (this.userDataAccess.saveUser(user) == null) {
+        }
+        //immediately encrypt the password
+        var userEncryptedPassword = new UserData(user.username(), getHashedPassword(user.password()), user.email());
+        if (this.userDataAccess.saveUser(userEncryptedPassword) == null) {
             throw new AlreadyTakenException("Error: already taken");
         } else {
             return new AuthData(getAuthToken(), user.username());
@@ -37,7 +45,7 @@ public class UserService {
         var user = userDataAccess.getUser(loginRequest.username());
         if (loginRequest.username() == null || loginRequest.password() == null) {
             throw new BadRequestException("Error: bad request");
-        } else if (user == null || !user.password().equals(loginRequest.password())) {
+        } else if (user == null || !BCrypt.checkpw(loginRequest.password(), user.password())) {
             throw new UnauthorizedException("Error: unauthorized");
         } else {
             return new AuthData(getAuthToken(), user.username());
