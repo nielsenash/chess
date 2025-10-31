@@ -65,7 +65,7 @@ public class DatabaseManager {
               `whiteUsername` varchar(128),
               `blackUsername` varchar(128),
               `gameName` varchar(128) NOT NULL,
-              `game` varchar(128) NOT NULL,
+              'game' LONGTEXT NOT NULL
               PRIMARY KEY (`gameID`),
               INDEX(whiteUsername),
               INDEX(blackUsername),

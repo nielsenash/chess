@@ -29,17 +29,19 @@ public class SqlGameDataAccess implements GameDataAccess {
 
     @Override
     public GameData createGame(String gameName) throws DataAccessException {
+        GameData gameData;
         try (var conn = getConnection()) {
             try (var preparedStatement = conn.prepareStatement(
                     "INSERT INTO game (gameName, game) VALUES (?, ?)")) {
                 preparedStatement.setString(1, gameName);
                 preparedStatement.setString(2, new Gson().toJson(new ChessGame()));
                 preparedStatement.executeUpdate();
+                gameData = new GameData(1, null, null, gameName, new ChessGame());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return authData;
+        return gameData;
     }
 
     @Override
