@@ -17,16 +17,23 @@ import java.util.Map;
 public class Server {
 
     private final Javalin server;
-    private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
+
+    //private final UserDataAccess userDataAccess = new MemoryUserDataAccess();
+    private final UserDataAccess userDataAccess = new SqlUserDataAccess();
     private final UserService userService = new UserService(userDataAccess);
-    private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
+
+    //private final GameDataAccess gameDataAccess = new MemoryGameDataAccess();
+    private final GameDataAccess gameDataAccess = new SqlGameDataAccess();
     private final GameService gameService = new GameService(gameDataAccess);
-    private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+
+    //private final AuthDataAccess authDataAccess = new MemoryAuthDataAccess();
+    private final AuthDataAccess authDataAccess = new SqlAuthDataAccess();
     private final AuthService authService = new AuthService(authDataAccess);
 
 
     public Server() {
         server = Javalin.create(config -> config.staticFiles.add("web"));
+
         // Register your endpoints and exception handlers here.
 
         server.delete("db", this::clear);
@@ -36,7 +43,6 @@ public class Server {
         server.get("game", this::listGames);
         server.post("game", this::createGame);
         server.put("game", this::joinGame);
-
     }
 
     private void clear(Context ctx) {

@@ -17,8 +17,30 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    public void example() throws Exception {
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
+                var rs = preparedStatement.executeQuery();
+                rs.next();
+                System.out.println(rs.getInt(1));
+            }
+        }
+    }
 
-    //not really sure where this goes, but I might as well creat it somewhere
+    public void configureDatabase() throws Exception {
+        createDatabase();
+        for (String statement : createTables) {
+            try (var conn = DatabaseManager.getConnection()) {
+                try (var preparedStatement = conn.prepareStatement(statement)) {
+                    var rs = preparedStatement.executeQuery();
+                    rs.next();
+                    System.out.println(rs.getInt(1));
+                }
+            }
+        }
+    }
+    
+    //not really sure where this goes, but I might as well create it somewhere
     private final String[] createTables = {
             """
             CREATE TABLE IF NOT EXISTS user (
