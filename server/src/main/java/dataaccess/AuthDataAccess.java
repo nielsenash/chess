@@ -5,7 +5,7 @@ import model.AuthData;
 public interface AuthDataAccess {
     void clear() throws DataAccessException;
 
-    void saveAuth(AuthData authData) throws DataAccessException;
+    AuthData saveAuth(AuthData authData) throws DataAccessException;
 
     AuthData getAuth(String authToken) throws DataAccessException;
 

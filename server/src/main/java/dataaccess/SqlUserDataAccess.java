@@ -13,7 +13,6 @@ public class SqlUserDataAccess implements UserDataAccess {
             try (var preparedStatement = conn.prepareStatement(
                     "TRUNCATE user")) {
                 preparedStatement.executeUpdate();
-                System.out.println("Deleted user table");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -31,8 +30,7 @@ public class SqlUserDataAccess implements UserDataAccess {
                 preparedStatement.setString(1, user.username());
                 preparedStatement.setString(2, user.password());
                 preparedStatement.setString(3, user.email());
-
-                System.out.println("Inserted user: " + preparedStatement.executeUpdate());
+                preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

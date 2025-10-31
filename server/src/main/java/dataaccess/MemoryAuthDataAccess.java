@@ -13,8 +13,9 @@ public class MemoryAuthDataAccess implements AuthDataAccess {
     }
 
     @Override
-    public void saveAuth(AuthData authData) {
+    public AuthData saveAuth(AuthData authData) {
         authTokens.put(authData.authToken(), authData);
+        return authData;
     }
 
     @Override
