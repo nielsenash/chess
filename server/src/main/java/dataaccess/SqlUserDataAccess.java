@@ -1,6 +1,5 @@
 package dataaccess;
 
-import exceptions.AlreadyTakenException;
 import model.UserData;
 
 import java.sql.SQLException;
@@ -9,8 +8,16 @@ import static dataaccess.DatabaseManager.getConnection;
 
 public class SqlUserDataAccess implements UserDataAccess {
     @Override
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        try (var conn = getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(
+                    "TRUNCATE user")) {
+                preparedStatement.executeUpdate();
+                System.out.println("Deleted user table");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -21,7 +28,6 @@ public class SqlUserDataAccess implements UserDataAccess {
             }
             try (var preparedStatement = conn.prepareStatement(
                     "INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
-
                 preparedStatement.setString(1, user.username());
                 preparedStatement.setString(2, user.password());
                 preparedStatement.setString(3, user.email());

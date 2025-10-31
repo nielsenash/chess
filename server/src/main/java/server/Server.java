@@ -46,10 +46,15 @@ public class Server {
     }
 
     private void clear(Context ctx) {
-        authService.clearAuthDatabase();
-        userService.clearUserDatabase();
-        gameService.clearGameDatabase();
-        ctx.result("{}");
+        try {
+            authService.clearAuthDatabase();
+            userService.clearUserDatabase();
+            gameService.clearGameDatabase();
+            ctx.result("{}");
+        } catch (Exception e) {
+            //do stuff
+        }
+
     }
 
     private void register(Context ctx) {

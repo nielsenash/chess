@@ -52,7 +52,7 @@ public class UserService {
         }
     }
 
-    public void clearUserDatabase() {
+    public void clearUserDatabase() throws Exception {
         userDataAccess.clear();
     }
 }

@@ -2,10 +2,8 @@ package dataaccess;
 
 import model.UserData;
 
-import javax.xml.crypto.Data;
-
 public interface UserDataAccess {
-    void clear();
+    void clear() throws DataAccessException;
 
     UserData saveUser(UserData user) throws DataAccessException;
 
