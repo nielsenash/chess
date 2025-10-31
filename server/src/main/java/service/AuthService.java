@@ -11,7 +11,7 @@ public class AuthService {
         this.authDataAccess = authDataAccess;
     }
 
-    public void saveAuthData(AuthData authData) {
+    public void saveAuthData(AuthData authData) throws Exception {
         authDataAccess.saveAuth(authData);
     }
 
@@ -31,7 +31,7 @@ public class AuthService {
         return authData;
     }
 
-    public void clearAuthDatabase() {
+    public void clearAuthDatabase() throws Exception {
         authDataAccess.clear();
     }
 

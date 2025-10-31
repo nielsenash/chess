@@ -16,11 +16,11 @@ public class GameService {
         this.gameDataAccess = gameDataAccess;
     }
 
-    public void clearGameDatabase() {
+    public void clearGameDatabase() throws Exception {
         gameDataAccess.clear();
     }
 
-    public Collection<GameData> listGames() {
+    public Collection<GameData> listGames() throws Exception {
         return gameDataAccess.listGames();
     }
 
