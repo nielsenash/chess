@@ -1,5 +1,6 @@
 package dataaccess;
 
+import exceptions.AlreadyTakenException;
 import model.UserData;
 
 import java.sql.SQLException;
@@ -16,15 +17,16 @@ public class SqlUserDataAccess implements UserDataAccess {
     public UserData saveUser(UserData user) throws DataAccessException {
         try (var conn = getConnection()) {
             if (getUser(user.username()) != null) {
-                try (var preparedStatement = conn.prepareStatement(
-                        "INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
+                return null;
+            }
+            try (var preparedStatement = conn.prepareStatement(
+                    "INSERT INTO user (username, password, email) VALUES (?, ?, ?)")) {
 
-                    preparedStatement.setString(1, user.username());
-                    preparedStatement.setString(2, user.password());
-                    preparedStatement.setString(3, user.email());
+                preparedStatement.setString(1, user.username());
+                preparedStatement.setString(2, user.password());
+                preparedStatement.setString(3, user.email());
 
-                    System.out.println("Inserted user: " + preparedStatement.executeUpdate());
-                }
+                System.out.println("Inserted user: " + preparedStatement.executeUpdate());
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
