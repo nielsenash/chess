@@ -25,11 +25,10 @@ public class GameService {
     }
 
     public GameData createGame(String gameName) throws Exception {
-        var gameData = gameDataAccess.createGame(gameName);
-        if (gameData.gameName() == null) {
+        if (gameName == null) {
             throw new BadRequestException("Error: Bad Request");
         }
-        return gameData;
+        return gameDataAccess.createGame(gameName);
     }
 
     public void joinGame(ChessGame.TeamColor playerColor, Integer gameID, String username) throws Exception {
