@@ -17,63 +17,54 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
-    public void example() throws Exception {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-                var rs = preparedStatement.executeQuery();
-                rs.next();
-                System.out.println(rs.getInt(1));
-            }
-        }
-    }
 
-    public void configureDatabase() throws Exception {
-        createDatabase();
-        for (String statement : createTables) {
-            try (var conn = DatabaseManager.getConnection()) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    var rs = preparedStatement.executeQuery();
-                    rs.next();
-                    System.out.println(rs.getInt(1));
-                }
-            }
-        }
-    }
-
-    //not really sure where this goes, but I might as well create it somewhere
-    private final String[] createTables = {
-            """
-            CREATE TABLE IF NOT EXISTS user (
-              `username` varchar(128) NOT NULL,
-              `password` varchar(128) NOT NULL,
-              `email` varchar(128) NOT NULL,
-              PRIMARY KEY (`username`),
-              INDEX(password),
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS auth (
-              `authToken` varchar(128) NOT NULL,
-              `username` varchar(128) NOT NULL,
-              PRIMARY KEY (`authToken`),
-              INDEX(username)
-            )
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS game (
-              `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(128),
-              `blackUsername` varchar(128),
-              `gameName` varchar(128) NOT NULL,
-              'game' LONGTEXT NOT NULL
-              PRIMARY KEY (`gameID`),
-              INDEX(whiteUsername),
-              INDEX(blackUsername),
-              INDEX(gameName),
-              INDEX(game)
-            )
-            """,
-    };
+//    public void configureDatabase() throws Exception {
+//        createDatabase();
+//        for (String statement : createTables) {
+//            try (var conn = DatabaseManager.getConnection()) {
+//                try (var preparedStatement = conn.prepareStatement(statement)) {
+//                    var rs = preparedStatement.executeQuery();
+//                    rs.next();
+//                    System.out.println(rs.getInt(1));
+//                }
+//            }
+//        }
+//    }
+//
+//    //not really sure where this goes, but I might as well create it somewhere
+//    private final String[] createTables = {
+//            """
+//            CREATE TABLE IF NOT EXISTS user (
+//              `username` varchar(128) NOT NULL,
+//              `password` varchar(128) NOT NULL,
+//              `email` varchar(128) NOT NULL,
+//              PRIMARY KEY (`username`),
+//              INDEX(password),
+//            )
+//            """,
+//            """
+//            CREATE TABLE IF NOT EXISTS auth (
+//              `authToken` varchar(128) NOT NULL,
+//              `username` varchar(128) NOT NULL,
+//              PRIMARY KEY (`authToken`),
+//              INDEX(username)
+//            )
+//            """,
+//            """
+//            CREATE TABLE IF NOT EXISTS game (
+//              `gameID` int NOT NULL AUTO_INCREMENT,
+//              `whiteUsername` varchar(128),
+//              `blackUsername` varchar(128),
+//              `gameName` varchar(128) NOT NULL,
+//              'game' LONGTEXT NOT NULL
+//              PRIMARY KEY (`gameID`),
+//              INDEX(whiteUsername),
+//              INDEX(blackUsername),
+//              INDEX(gameName),
+//              INDEX(game)
+//            )
+//            """,
+//    };
 
     /**
      * Creates the database if it does not already exist.
