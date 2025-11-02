@@ -14,8 +14,7 @@ public class SqlUserDataAccessTests {
 
     @Test
     void saveUser() throws Exception {
-        var userData = sqlUserDataAccess.saveUser(user);
-        assertNotNull(userData);
+        assertNotNull(sqlUserDataAccess.saveUser(user));
     }
 
     @Test
@@ -23,6 +22,16 @@ public class SqlUserDataAccessTests {
         assertThrows(RuntimeException.class, () -> sqlUserDataAccess.saveUser(user2));
     }
 
+    @Test
+    void getUser() throws Exception {
+        sqlUserDataAccess.saveUser(user);
+        assertNotNull(sqlUserDataAccess.getUser(user.username()));
+    }
 
+    @Test
+    void badGetUser() throws Exception {
+        sqlUserDataAccess.saveUser(user);
+        assertNull(sqlUserDataAccess.getUser("aoeitha;nge"));
+    }
 }
 
