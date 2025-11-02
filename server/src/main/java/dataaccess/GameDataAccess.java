@@ -15,6 +15,4 @@ public interface GameDataAccess {
     void joinGame(ChessGame.TeamColor playerColor, Integer gameID, String username) throws DataAccessException;
 
     GameData getGame(Integer gameId) throws DataAccessException;
-
-    void updateGame(Integer gameId, GameData gameData) throws DataAccessException;
 }

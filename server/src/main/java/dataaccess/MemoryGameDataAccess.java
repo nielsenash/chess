@@ -39,16 +39,11 @@ public class MemoryGameDataAccess implements GameDataAccess {
         var whiteUsername = playerColor == WHITE ? username : gameData.whiteUsername();
         var blackUsername = playerColor == BLACK ? username : gameData.blackUsername();
         var newGameData = new GameData(gameData.gameID(), whiteUsername, blackUsername, gameData.gameName(), gameData.game());
-        updateGame(gameID, newGameData);
+        games.put(gameID, newGameData);
     }
 
     @Override
     public GameData getGame(Integer gameID) {
         return games.get(gameID);
-    }
-
-    @Override
-    public void updateGame(Integer gameID, GameData gameData) {
-        games.put(gameID, gameData);
     }
 }
