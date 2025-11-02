@@ -33,7 +33,13 @@ public class Server {
 
     public Server() {
         server = Javalin.create(config -> config.staticFiles.add("web"));
-
+        try {
+            DatabaseManager.configureDatabase();
+        } catch (Exception e) {
+            System.err.println("Failed to configure database: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Database configuration failed", e);
+        }
         // Register your endpoints and exception handlers here.
 
         server.delete("db", this::clear);
