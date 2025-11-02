@@ -54,7 +54,7 @@ public class SqlAuthDataAccess implements AuthDataAccess {
 
             }
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Error: Data Access Exception");
         }
 
         return authData;
@@ -72,7 +72,7 @@ public class SqlAuthDataAccess implements AuthDataAccess {
                 throw new UnauthorizedException("Error: unauthorized");
             }
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Error: Data Access Exception");
         }
     }
 }

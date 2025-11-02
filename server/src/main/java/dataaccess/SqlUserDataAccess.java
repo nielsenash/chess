@@ -59,7 +59,7 @@ public class SqlUserDataAccess implements UserDataAccess {
 
             }
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new DataAccessException("Error: Data Access Exception");
         }
 
         return user;

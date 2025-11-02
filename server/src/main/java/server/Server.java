@@ -46,13 +46,17 @@ public class Server {
     }
 
     private void clear(Context ctx) {
+        var serializer = new Gson();
         try {
             authService.clearAuthDatabase();
             userService.clearUserDatabase();
             gameService.clearGameDatabase();
             ctx.result("{}");
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
 
     }
@@ -70,8 +74,11 @@ public class Server {
         } catch (AlreadyTakenException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
     }
 
@@ -91,8 +98,11 @@ public class Server {
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
     }
 
@@ -105,8 +115,11 @@ public class Server {
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
     }
 
@@ -120,8 +133,11 @@ public class Server {
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
     }
 
@@ -140,8 +156,11 @@ public class Server {
         } catch (UnauthorizedException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
     }
 
@@ -162,8 +181,11 @@ public class Server {
         } catch (AlreadyTakenException e) {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
+        } catch (DataAccessException e) {
+            ctx.status(e.getStatusCode());
+            ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            //do stuff
+            throw new RuntimeException(e);
         }
     }
 
