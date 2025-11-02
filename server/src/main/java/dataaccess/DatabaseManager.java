@@ -19,7 +19,7 @@ public class DatabaseManager {
 
     public static void configureDatabase() throws Exception {
         createDatabase();
-        for (String statement : createTables) {
+        for (String statement : CREATE_TABLES) {
             try (var conn = DatabaseManager.getConnection()) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
@@ -29,7 +29,7 @@ public class DatabaseManager {
     }
 
     //not really sure where this goes, but I might as well create it somewhere
-    private static final String[] createTables = {
+    private static final String[] CREATE_TABLES = {
             """
         CREATE TABLE IF NOT EXISTS user (
           `username` varchar(128) NOT NULL,
