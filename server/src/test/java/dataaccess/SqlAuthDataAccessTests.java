@@ -37,10 +37,12 @@ public class SqlAuthDataAccessTests {
         assertDoesNotThrow(() -> sqlAuthDataAccess.deleteAuth(auth.authToken()));
     }
 
-//    @Test
-//    void badDeleteAuth() throws Exception {
-//        assertThrows(RuntimeException.class, () -> sqlAuthDataAccess.deleteAuth("eirtyhuie"));
-//    }
+    @Test
+    void badDeleteAuth() throws Exception {
+        sqlAuthDataAccess.saveAuth(auth);
+        sqlAuthDataAccess.deleteAuth(null);
+        assertNotNull(sqlAuthDataAccess.getAuth(auth.authToken()));
+    }
 
     @Test
     void clear() throws Exception {

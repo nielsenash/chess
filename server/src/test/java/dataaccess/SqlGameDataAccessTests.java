@@ -1,15 +1,14 @@
 package dataaccess;
 
-import model.AuthData;
 import org.junit.jupiter.api.Test;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 public class SqlGameDataAccessTests {
     SqlGameDataAccess sqlGameDataAccess = new SqlGameDataAccess();
-    AuthData auth = new AuthData(";aoiehtgb", ";aieht");
-    AuthData auth2 = new AuthData(null, ";aieht");
 
     @Test
     void createGame() throws Exception {
@@ -21,25 +20,27 @@ public class SqlGameDataAccessTests {
         assertThrows(RuntimeException.class, () -> sqlGameDataAccess.createGame(null));
     }
 
-//    @Test
-//    void getAuth() throws Exception {
-//        assertNotNull(sqlAuthDataAccess.getAuth(auth.authToken()));
-//    }
-//
-//    @Test
-//    void badGetAuth() throws Exception {
-//        assertNull(sqlAuthDataAccess.getAuth("aoeitha;nge"));
-//    }
-//
-//    @Test
-//    void deleteAuth() throws Exception {
-//        assertDoesNotThrow(() -> sqlAuthDataAccess.deleteAuth(auth.authToken()));
-//    }
+    @Test
+    void joinGame() throws Exception {
+        assertDoesNotThrow(() -> sqlGameDataAccess.joinGame(WHITE, 1, "ashley"));
+    }
 
-//    @Test
-//    void badDeleteAuth() throws Exception {
-//        assertThrows(RuntimeException.class, () -> sqlAuthDataAccess.deleteAuth("eirtyhuie"));
-//    }
+    @Test
+    void badJoinGame() throws Exception {
+        assertThrows(RuntimeException.class, () -> sqlGameDataAccess.joinGame(null, null, null));
+    }
+
+    @Test
+    void listGames() throws Exception {
+        assertDoesNotThrow(() -> sqlGameDataAccess.listGames());
+    }
+
+    @Test
+    void badListGames() throws Exception {
+        sqlGameDataAccess.createGame("yay");
+        assertNotNull(sqlGameDataAccess.listGames());
+    }
+
 
     @Test
     void clear() throws Exception {
