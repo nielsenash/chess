@@ -33,5 +33,11 @@ public class SqlUserDataAccessTests {
         sqlUserDataAccess.saveUser(user);
         assertNull(sqlUserDataAccess.getUser("aoeitha;nge"));
     }
+
+    @Test
+    void clear() throws Exception {
+        assertDoesNotThrow(() -> sqlUserDataAccess.clear());
+    }
+
 }
 
