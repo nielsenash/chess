@@ -1,7 +1,6 @@
 package dataaccess;
 
 import model.AuthData;
-import model.UserData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SqlAuthDataAccessTests {
 
     SqlAuthDataAccess sqlAuthDataAccess = new SqlAuthDataAccess();
-    UserData user = new UserData("ashley", "nielsen", "jfa;8oeih");
-    UserData user2 = new UserData(null, "nielsen", "jfa;8oeih");
     AuthData auth = new AuthData(";aoiehtgb", ";aieht");
     AuthData auth2 = new AuthData(null, ";aieht");
 
@@ -34,6 +31,16 @@ public class SqlAuthDataAccessTests {
     void badGetAuth() throws Exception {
         assertNull(sqlAuthDataAccess.getAuth("aoeitha;nge"));
     }
+
+    @Test
+    void deleteAuth() throws Exception {
+        assertDoesNotThrow(() -> sqlAuthDataAccess.deleteAuth(auth.authToken()));
+    }
+
+//    @Test
+//    void badDeleteAuth() throws Exception {
+//        assertThrows(RuntimeException.class, () -> sqlAuthDataAccess.deleteAuth("eirtyhuie"));
+//    }
 
     @Test
     void clear() throws Exception {
