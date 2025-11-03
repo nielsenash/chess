@@ -25,17 +25,15 @@ public class SqlAuthDataAccessTests {
         assertThrows(RuntimeException.class, () -> sqlAuthDataAccess.saveAuth(auth2));
     }
 
-//    @Test
-//    void getUser() throws Exception {
-//        sqlUserDataAccess.saveUser(user);
-//        assertNotNull(sqlUserDataAccess.getUser(user.username()));
-//    }
-//
-//    @Test
-//    void badGetUser() throws Exception {
-//        sqlUserDataAccess.saveUser(user);
-//        assertNull(sqlUserDataAccess.getUser("aoeitha;nge"));
-//    }
+    @Test
+    void getAuth() throws Exception {
+        assertNotNull(sqlAuthDataAccess.getAuth(auth.authToken()));
+    }
+
+    @Test
+    void badGetAuth() throws Exception {
+        assertNull(sqlAuthDataAccess.getAuth("aoeitha;nge"));
+    }
 
     @Test
     void clear() throws Exception {
