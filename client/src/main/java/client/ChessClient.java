@@ -20,10 +20,9 @@ public class ChessClient {
         while (!result.equals("quit")) {
             try {
                 result = eval(scanner.nextLine());
-                result = eval("register");
                 System.out.println(result);
             } catch (Exception e) {
-                //do something
+                System.out.println(e.getMessage());
             }
 
         }
@@ -31,9 +30,11 @@ public class ChessClient {
     }
 
     public String eval(String input) throws Exception {
-        return switch (input) {
+        var entries = input.split(" ");
+        var command = entries[0];
+        return switch (command) {
             case "help" -> help();
-            case "register" -> register();
+            case "register" -> register(entries);
             default -> input;
         };
     }
@@ -58,11 +59,19 @@ public class ChessClient {
                 """;
     }
 
-    public String register() throws Exception {
-        System.out.println("inside register");
-        serverFacade.register(new UserData("ashley", "nielsen", "something"));
-        System.out.println("after server facade register");
-        state = State.SIGNEDIN;
-        return help();
+    public String register(String[] entries) throws Exception {
+        for (String s : entries) {
+            System.out.println(s);
+        }
+        if (entries.length == 4) {
+            var user = serverFacade.register(new UserData(entries[1], entries[2], entries[3]));
+            if (user == null) {
+                throw new Exception("Username Already Taken");
+            }
+            state = State.SIGNEDIN;
+            return help();
+        } else {
+            throw new Exception("Invalid input"); // probs want to create a new exception
+        }
     }
 }
