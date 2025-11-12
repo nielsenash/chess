@@ -1,5 +1,6 @@
 package client;
 
+import model.LoginRequest;
 import model.UserData;
 
 import java.util.Scanner;
@@ -35,6 +36,7 @@ public class ChessClient {
         return switch (command) {
             case "help" -> help();
             case "register" -> register(entries);
+            case "login" -> login(entries);
             default -> input;
         };
     }
@@ -60,13 +62,23 @@ public class ChessClient {
     }
 
     public String register(String[] entries) throws Exception {
-        for (String s : entries) {
-            System.out.println(s);
-        }
         if (entries.length == 4) {
             var user = serverFacade.register(new UserData(entries[1], entries[2], entries[3]));
             if (user == null) {
                 throw new Exception("Username Already Taken");
+            }
+            state = State.SIGNEDIN;
+            return help();
+        } else {
+            throw new Exception("Invalid input"); // probs want to create a new exception
+        }
+    }
+
+    public String login(String[] entries) throws Exception {
+        if (entries.length == 3) {
+            var user = serverFacade.login(new LoginRequest(entries[1], entries[2]));
+            if (user == null) {
+                throw new Exception("Invalid Credentials");
             }
             state = State.SIGNEDIN;
             return help();

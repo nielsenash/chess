@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import model.AuthData;
+import model.LoginRequest;
 import model.UserData;
 
 import java.net.URI;
@@ -16,10 +18,16 @@ public class ServerFacade {
         this.serverUrl = serverUrl;
     }
 
-    public UserData register(UserData userData) throws Exception {
+    public AuthData register(UserData userData) throws Exception {
         var request = buildRequest("POST", "/user", userData);
         var response = sendRequest(request);
-        return handleResponse(response, UserData.class);
+        return handleResponse(response, AuthData.class);
+    }
+
+    public AuthData login(LoginRequest loginRequest) throws Exception {
+        var request = buildRequest("POST", "/session", loginRequest);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
