@@ -5,10 +5,10 @@ import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.AuthData;
+import model.GameData;
 import model.LoginRequest;
 import model.UserData;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -32,6 +32,12 @@ public class ServerFacade {
         var request = buildRequest("POST", "/session", loginRequest);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
+    }
+
+    public GameData createGame(String name) throws Exception {
+        var request = buildRequest("POST", "/game", name);
+        var response = sendRequest(request);
+        return handleResponse(response, GameData.class);
     }
 
     public void clear() throws Exception {

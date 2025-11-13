@@ -2,6 +2,8 @@ package client;
 
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
+import model.LoginRequest;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -46,10 +48,25 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void BadRegister() throws Exception {
+    public void badRegister() {
         var user1 = new UserData("michael", null, "@");
         assertThrows(BadRequestException.class, () -> serverFacade.register(user1));
     }
+
+    @Test
+    public void login() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        serverFacade.register(user1);
+        assertDoesNotThrow(() -> serverFacade.login(new LoginRequest(user1.username(), user1.password())));
+    }
+
+    @Test
+    public void badLogin() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        serverFacade.register(user1);
+        assertThrows(UnauthorizedException.class, () -> serverFacade.login(new LoginRequest("anna", "ein;aoien")));
+    }
+
 
     @Test
     public void clearWorks() throws Exception {
@@ -58,5 +75,4 @@ public class ServerFacadeTests {
         serverFacade.clear();
         assertDoesNotThrow(() -> serverFacade.register(user2));
     }
-
 }

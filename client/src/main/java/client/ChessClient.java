@@ -1,6 +1,5 @@
 package client;
 
-import exceptions.AlreadyTakenException;
 import model.LoginRequest;
 import model.UserData;
 
@@ -26,7 +25,6 @@ public class ChessClient {
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
-
         }
         System.out.println();
     }
@@ -38,6 +36,7 @@ public class ChessClient {
             case "help" -> help();
             case "register" -> register(entries);
             case "login" -> login(entries);
+            case "create" -> createGame(entries);
             default -> input;
         };
     }
@@ -63,29 +62,28 @@ public class ChessClient {
     }
 
     public String register(String[] entries) throws Exception {
-        if (entries.length == 4) {
-            try {
-                serverFacade.register(new UserData(entries[1], entries[2], entries[3]));
-            } catch (AlreadyTakenException e) {
-
-            }
-            state = State.SIGNEDIN;
-            return help();
-        } else {
-            throw new Exception("Invalid input"); // probs want to create a new exception
+        if (entries.length != 4) {
+            throw new Exception("Invalid input");
         }
+        serverFacade.register(new UserData(entries[1], entries[2], entries[3]));
+        state = State.SIGNEDIN;
+        return help();
     }
 
     public String login(String[] entries) throws Exception {
-        if (entries.length == 3) {
-            var user = serverFacade.login(new LoginRequest(entries[1], entries[2]));
-            if (user == null) {
-                throw new Exception("Invalid Credentials");
-            }
-            state = State.SIGNEDIN;
-            return help();
-        } else {
-            throw new Exception("Invalid input"); // probs want to create a new exception
+        if (entries.length != 3) {
+            throw new Exception("Invalid input");
         }
+        serverFacade.login(new LoginRequest(entries[1], entries[2]));
+        state = State.SIGNEDIN;
+        return help();
+    }
+
+    public String createGame(String[] entries) throws Exception {
+        if (entries.length != 2) {
+            throw new Exception("Invalid input");
+        }
+        serverFacade.createGame(entries[1]);
+        return "Game with name " + entries[1] + "has been created";
     }
 }
