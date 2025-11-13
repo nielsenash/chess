@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
@@ -9,10 +10,12 @@ import model.GameData;
 import model.LoginRequest;
 import model.UserData;
 
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 
 public class ServerFacade {
     private final HttpClient client = HttpClient.newHttpClient();
@@ -46,6 +49,14 @@ public class ServerFacade {
         return handleResponse(response, GameData.class);
     }
 
+    public ArrayList<GameData> listGames(String authToken) throws Exception {
+        var request = buildRequest("GET", "/game", null, authToken);
+        var response = sendRequest(request);
+        Type type = new TypeToken<ArrayList<GameData>>() {
+        }.getType();
+        return handleResponse(response, type);
+    }
+
     public void clear() throws Exception {
         var request = buildRequest("DELETE", "/db", null, null);
         sendRequest(request);
@@ -76,7 +87,7 @@ public class ServerFacade {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
-    private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
+    private <T> T handleResponse(HttpResponse<String> response, Type responseClass) throws Exception {
         var status = response.statusCode();
         if (!isSuccessful(status)) {
             switch (status) {

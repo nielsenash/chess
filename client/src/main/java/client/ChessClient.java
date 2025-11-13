@@ -1,7 +1,6 @@
 package client;
 
 import model.LoginRequest;
-import model.UserData;
 
 import java.util.Scanner;
 
@@ -39,14 +38,15 @@ public class ChessClient {
             case "login" -> login(entries);
             case "logout" -> logout(entries);
             case "create" -> createGame(entries);
-            default -> input;
+            case "list" -> listGames(entries);
+            default -> "Invalid Option";
         };
     }
 
     public String help() {
         if (state == State.SIGNEDIN) {
             return """
-                    OPTIONS
+                    \nOPTIONS
                     - create <NAME>
                     - list
                     - join <ID> [WHITE/BLACK]
@@ -57,7 +57,7 @@ public class ChessClient {
                     """;
         }
         return """
-                OPTIONS
+                \nOPTIONS
                 - register <USERNAME> <PASSWORD> <EMAIL>
                 - login <USERNAME> <PASSWORD>
                 - quit
@@ -89,6 +89,13 @@ public class ChessClient {
         serverFacade.logout(authToken);
         state = State.SIGNEDOUT;
         return "Successfully logged out user\n" + help();
+    }
+
+    public String listGames(String[] entries) throws Exception {
+        if (entries.length != 1) {
+            throw new Exception("Invalid input");
+        }
+        return serverFacade.listGames(authToken).toString();
     }
 
     public String createGame(String[] entries) throws Exception {
