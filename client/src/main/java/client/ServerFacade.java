@@ -1,7 +1,7 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
@@ -45,6 +45,13 @@ public class ServerFacade {
         var request = buildRequest("POST", "/game", createGameRequest, authToken);
         var response = sendRequest(request);
         return handleResponse(response, GameData.class);
+    }
+
+    public void joinGame(int id, ChessGame.TeamColor color, String authToken) throws Exception {
+        var joinGameRequest = new JoinGameRequest(color, id);
+        var request = buildRequest("PUT", "/game", joinGameRequest, authToken);
+        var response = sendRequest(request);
+        handleResponse(response, null);
     }
 
     public ArrayList<GameData> listGames(String authToken) throws Exception {

@@ -7,6 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
+import static chess.ChessGame.TeamColor.WHITE;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -107,6 +108,22 @@ public class ServerFacadeTests {
         var user1 = new UserData("michael", "star", "@");
         var auth = serverFacade.register(user1);
         assertThrows(BadRequestException.class, () -> serverFacade.createGame(null, auth.authToken()));
+    }
+
+    @Test
+    public void joinGame() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        var auth = serverFacade.register(user1);
+        serverFacade.createGame(":)", auth.authToken());
+        assertDoesNotThrow(() -> serverFacade.joinGame(1, WHITE, auth.authToken()));
+    }
+
+    @Test
+    public void badJoinGame() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        var auth = serverFacade.register(user1);
+        serverFacade.createGame(":)", auth.authToken());
+        assertThrows(UnauthorizedException.class, () -> serverFacade.joinGame(1, WHITE, "something"));
     }
 
 

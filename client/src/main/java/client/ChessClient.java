@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import model.LoginRequest;
 
 import java.util.Scanner;
@@ -39,6 +40,8 @@ public class ChessClient {
             case "logout" -> logout(entries);
             case "create" -> createGame(entries);
             case "list" -> listGames(entries);
+            case "join" -> joinGame(entries);
+            case "observe" -> observeGame(entries);
             default -> "Invalid Option";
         };
     }
@@ -103,6 +106,36 @@ public class ChessClient {
             throw new Exception("Invalid input");
         }
         serverFacade.createGame(entries[1], authToken);
-        return "Game with name " + entries[1] + "has been created";
+        return "Game with name " + entries[1] + " has been created";
+    }
+
+    public String joinGame(String[] entries) throws Exception {
+        if (entries.length != 3) {
+            throw new Exception("Invalid input");
+        }
+
+        int gameId;
+        ChessGame.TeamColor color;
+        try {
+            gameId = Integer.parseInt(entries[1]);
+            color = ChessGame.TeamColor.valueOf(entries[2].toUpperCase());
+        } catch (Exception e) {
+            throw new Exception("Game ID must be a number and color must be of the form [WHITE/BLACK]");
+        }
+        serverFacade.joinGame(gameId, color, authToken);
+        return "Joined Game as " + entries[2] + " player";
+    }
+
+    public String observeGame(String[] entries) throws Exception {
+        if (entries.length != 2) {
+            throw new Exception("Invalid input");
+        }
+        int gameId;
+        try {
+            gameId = Integer.parseInt(entries[1]);
+        } catch (Exception e) {
+            throw new Exception("Game ID must be a number");
+        }
+        return "Observing game " + gameId;
     }
 }
