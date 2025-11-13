@@ -67,6 +67,14 @@ public class ServerFacadeTests {
         assertThrows(UnauthorizedException.class, () -> serverFacade.login(new LoginRequest("anna", "ein;aoien")));
     }
 
+//    @Test
+//    public void createGame() throws Exception {
+//        assertDoesNotThrow(() -> serverFacade.createGame(":)"));
+//    }
+//
+//    @Test
+//    public void badCreateGame() throws
+
 
     @Test
     public void clearWorks() throws Exception {
