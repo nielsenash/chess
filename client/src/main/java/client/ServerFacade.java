@@ -5,10 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
-import model.AuthData;
-import model.GameData;
-import model.LoginRequest;
-import model.UserData;
+import model.*;
 
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -52,9 +49,9 @@ public class ServerFacade {
     public ArrayList<GameData> listGames(String authToken) throws Exception {
         var request = buildRequest("GET", "/game", null, authToken);
         var response = sendRequest(request);
-        Type type = new TypeToken<ArrayList<GameData>>() {
-        }.getType();
-        return handleResponse(response, type);
+        System.out.println(response.body());
+        GameList gameList = handleResponse(response, GameList.class);
+        return gameList.getGames();
     }
 
     public void clear() throws Exception {

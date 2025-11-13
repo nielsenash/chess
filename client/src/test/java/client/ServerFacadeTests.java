@@ -1,6 +1,5 @@
 package client;
 
-import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
 import exceptions.UnauthorizedException;
 import model.LoginRequest;
@@ -79,6 +78,13 @@ public class ServerFacadeTests {
         var user1 = new UserData("michael", "star", "@");
         serverFacade.register(user1);
         assertThrows(UnauthorizedException.class, () -> serverFacade.logout("random auth token"));
+    }
+
+    @Test
+    public void listGames() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        var auth = serverFacade.register(user1);
+        assertDoesNotThrow(() -> serverFacade.listGames(auth.authToken()));
     }
 
 
