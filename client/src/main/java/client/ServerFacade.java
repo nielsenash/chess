@@ -1,10 +1,14 @@
 package client;
 
 import com.google.gson.Gson;
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
+import exceptions.UnauthorizedException;
 import model.AuthData;
 import model.LoginRequest;
 import model.UserData;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,6 +34,11 @@ public class ServerFacade {
         return handleResponse(response, AuthData.class);
     }
 
+    public void clear() throws Exception {
+        var request = buildRequest("DELETE", "/db", null);
+        sendRequest(request);
+    }
+
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
@@ -49,17 +58,18 @@ public class ServerFacade {
     }
 
     private HttpResponse<String> sendRequest(HttpRequest request) throws Exception {
-        try {
-            return client.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
-        }
+        return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseClass) throws Exception {
         var status = response.statusCode();
         if (!isSuccessful(status)) {
-            throw new Exception(); // def need to add something here
+            switch (status) {
+                case 400 -> throw new BadRequestException("Error: Bad Request");
+                case 401 -> throw new UnauthorizedException("Error: Unauthorized");
+                case 403 -> throw new AlreadyTakenException("Error: Already Taken");
+                default -> throw new Exception("Error: Something bad happened");
+            }
         }
 
         if (responseClass != null) {

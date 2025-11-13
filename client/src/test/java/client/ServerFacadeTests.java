@@ -1,10 +1,12 @@
 package client;
 
+import exceptions.AlreadyTakenException;
+import exceptions.BadRequestException;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class ServerFacadeTests {
@@ -25,9 +27,9 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-    @AfterAll
-    static void clear() {
-        //serverFacade.clear();
+    @AfterEach
+    public void clear() throws Exception {
+        serverFacade.clear();
     }
 
 
@@ -41,6 +43,20 @@ public class ServerFacadeTests {
         var user1 = new UserData("michael", "star", "@");
         var auth = serverFacade.register(user1);
         assertEquals(user1.username(), auth.username());
+    }
+
+    @Test
+    public void BadRegister() throws Exception {
+        var user1 = new UserData("michael", null, "@");
+        assertThrows(BadRequestException.class, () -> serverFacade.register(user1));
+    }
+
+    @Test
+    public void clearWorks() throws Exception {
+        var user2 = new UserData("andrew", "loves", "ashley");
+        serverFacade.register(user2);
+        serverFacade.clear();
+        assertDoesNotThrow(() -> serverFacade.register(user2));
     }
 
 }

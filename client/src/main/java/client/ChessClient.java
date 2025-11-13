@@ -1,5 +1,6 @@
 package client;
 
+import exceptions.AlreadyTakenException;
 import model.LoginRequest;
 import model.UserData;
 
@@ -63,9 +64,10 @@ public class ChessClient {
 
     public String register(String[] entries) throws Exception {
         if (entries.length == 4) {
-            var user = serverFacade.register(new UserData(entries[1], entries[2], entries[3]));
-            if (user == null) {
-                throw new Exception("Username Already Taken");
+            try {
+                serverFacade.register(new UserData(entries[1], entries[2], entries[3]));
+            } catch (AlreadyTakenException e) {
+
             }
             state = State.SIGNEDIN;
             return help();
