@@ -102,8 +102,12 @@ public class ServerFacadeTests {
         assertDoesNotThrow(() -> serverFacade.createGame(":)", auth.authToken()));
     }
 
-//    @Test
-//    public void badCreateGame() throws
+    @Test
+    public void badCreateGame() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        var auth = serverFacade.register(user1);
+        assertThrows(BadRequestException.class, () -> serverFacade.createGame(null, auth.authToken()));
+    }
 
 
     @Test
