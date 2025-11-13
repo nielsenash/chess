@@ -2,6 +2,7 @@ package client;
 
 import chess.ChessGame;
 import model.LoginRequest;
+import model.UserData;
 
 import java.util.Scanner;
 
@@ -72,6 +73,7 @@ public class ChessClient {
         if (entries.length != 4) {
             throw new Exception("Invalid input");
         }
+        authToken = serverFacade.register(new UserData(entries[1], entries[2], entries[3])).authToken();
         state = State.SIGNEDIN;
         return "Successfully registered user " + entries[1] + "\n" + help();
     }
