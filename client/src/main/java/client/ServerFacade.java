@@ -41,7 +41,8 @@ public class ServerFacade {
     }
 
     public GameData createGame(String name, String authToken) throws Exception {
-        var request = buildRequest("POST", "/game", name, authToken);
+        var createGameRequest = new CreateGameRequest(name);
+        var request = buildRequest("POST", "/game", createGameRequest, authToken);
         var response = sendRequest(request);
         return handleResponse(response, GameData.class);
     }

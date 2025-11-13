@@ -87,12 +87,21 @@ public class ServerFacadeTests {
         assertDoesNotThrow(() -> serverFacade.listGames(auth.authToken()));
     }
 
+    @Test
+    public void UnauthorizedListGames() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        serverFacade.register(user1);
+        assertThrows(UnauthorizedException.class, () -> serverFacade.listGames("random"));
+    }
 
-//    @Test
-//    public void createGame() throws Exception {
-//        assertDoesNotThrow(() -> serverFacade.createGame(":)"));
-//    }
-//
+
+    @Test
+    public void createGame() throws Exception {
+        var user1 = new UserData("michael", "star", "@");
+        var auth = serverFacade.register(user1);
+        assertDoesNotThrow(() -> serverFacade.createGame(":)", auth.authToken()));
+    }
+
 //    @Test
 //    public void badCreateGame() throws
 
