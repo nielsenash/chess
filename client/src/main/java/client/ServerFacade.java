@@ -63,7 +63,8 @@ public class ServerFacade {
 
     public void clear() throws Exception {
         var request = buildRequest("DELETE", "/db", null, null);
-        sendRequest(request);
+        var response = sendRequest(request);
+        handleResponse(response, null);
     }
 
     private HttpRequest buildRequest(String method, String path, Object body, String authToken) {
