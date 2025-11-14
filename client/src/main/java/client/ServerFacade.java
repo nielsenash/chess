@@ -99,7 +99,7 @@ public class ServerFacade {
                 case 400 -> throw new BadRequestException("Error: Bad Request");
                 case 401 -> throw new UnauthorizedException("Error: Unauthorized");
                 case 403 -> throw new AlreadyTakenException("Error: Already Taken");
-                default -> throw new Exception("Error: Something bad happened");
+                default -> throw new Exception("Error: Server Error");
             }
         }
 
