@@ -3,9 +3,11 @@ package client;
 import chess.ChessGame;
 import model.LoginRequest;
 import model.UserData;
+import ui.ChessBoardLayout;
 
 import java.util.Scanner;
 
+import static chess.ChessGame.TeamColor.WHITE;
 import static client.State.SIGNEDOUT;
 
 public class ChessClient {
@@ -154,6 +156,9 @@ public class ChessClient {
         }
 
         serverFacade.joinGame(gameId, color, authToken);
+
+        var chessBoardLayout = new ChessBoardLayout(color);
+        chessBoardLayout.printBoard();
         return "Joined Game as " + entries[2] + " player";
     }
 
@@ -170,6 +175,9 @@ public class ChessClient {
         if (gameId > numGames) {
             throw new Exception("Game " + gameId + " does not exist");
         }
+
+        var chessBoardLayout = new ChessBoardLayout(WHITE);
+        chessBoardLayout.printBoard();
         return "Observing game " + gameId;
     }
 }

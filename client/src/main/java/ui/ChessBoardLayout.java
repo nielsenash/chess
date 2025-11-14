@@ -29,6 +29,7 @@ public class ChessBoardLayout {
         drawChessBoard(out);
         setBlack(out);
         drawFileLabels(out, SET_BG_COLOR_LIGHT_GREY);
+        setWhite(out);
     }
 
     private void drawFileLabels(PrintStream out, String color) {
@@ -188,6 +189,10 @@ public class ChessBoardLayout {
 
     private void setGreen(PrintStream out) {
         out.print(SET_TEXT_COLOR_GREEN);
+    }
+
+    private void setWhite(PrintStream out) {
+        out.print(SET_TEXT_COLOR_WHITE);
     }
 
 

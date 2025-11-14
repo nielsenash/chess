@@ -1,8 +1,4 @@
 import client.ChessClient;
-import ui.ChessBoardLayout;
-
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
 
 public class Main {
     public static void main(String[] args) {
