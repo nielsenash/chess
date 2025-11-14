@@ -14,12 +14,10 @@ public class Main {
         }
 
         try {
-            var chessBoardLayout = new ChessBoardLayout(WHITE);
-            chessBoardLayout.printBoard();
 
-//            var chessClient = new ChessClient(serverUrl);
-//            chessClient.clear();
-//            chessClient.run();
+            var chessClient = new ChessClient(serverUrl);
+            chessClient.clear();
+            chessClient.run();
 
         } catch (Throwable ex) {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());

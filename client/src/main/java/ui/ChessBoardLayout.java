@@ -4,7 +4,6 @@ import chess.ChessGame;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 
 import static chess.ChessGame.TeamColor.BLACK;
@@ -35,32 +34,32 @@ public class ChessBoardLayout {
     private void drawFileLabels(PrintStream out, String color) {
         System.out.print(color);
         var labels = team == WHITE
-                ? " A   B   C   D   E   F   G   H "
-                : " H   G   F   E   D   C   B   A ";
-        System.out.println(labels);
+                ? "    A   B  C   D  E   F   G  H     "
+                : "    H   G  F   E  D   C   B  A     ";
+        System.out.print(labels);
+        System.out.println(RESET_BG_COLOR);
     }
 
     private void drawChessBoard(PrintStream out) {
 
         if (team == BLACK) {
             setGreen(out);
-            drawRow1(out, new String[]{WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING,
-                    WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK});
-            drawRow2(out, WHITE_PAWN);
+            drawTopRow(out, new String[]{WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_KING,
+                    WHITE_QUEEN, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}, 1);
+            drawTopPawns(out, WHITE_PAWN, 2);
             drawMiddle(out);
-            setBlue(out);
-            drawRow7(out, BLACK_PAWN);
-            drawRow8(out, new String[]{BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING,
-                    BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK});
+            drawBottomPawns(out, BLACK_PAWN, 7);
+            drawBottomRow(out, new String[]{BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_KING,
+                    BLACK_QUEEN, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK}, 8);
         } else {
             setBlue(out);
-            drawRow8(out, new String[]{BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN,
-                    BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK});
-            drawRow7(out, BLACK_PAWN);
+            drawTopRow(out, new String[]{BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN,
+                    BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK}, 8);
+            drawTopPawns(out, BLACK_PAWN, 7);
             drawMiddle(out);
-            drawRow2(out, WHITE_PAWN);
-            drawRow1(out, new String[]{WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN,
-                    WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK});
+            drawBottomPawns(out, WHITE_PAWN, 2);
+            drawBottomRow(out, new String[]{WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN,
+                    WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK}, 1);
         }
     }
 
@@ -71,20 +70,27 @@ public class ChessBoardLayout {
         setBlack(out);
         System.out.print(nums[0]);
         drawMiddle(out, "\u001b[107m", "\u001b[100m");
+        setBlack(out);
         System.out.print(nums[0]);
-        out.println();
+        System.out.println(RESET_BG_COLOR);
+        setBlack(out);
         System.out.print(nums[1]);
         drawMiddle(out, "\u001b[100m", "\u001b[107m");
+        setBlack(out);
         System.out.print(nums[1]);
-        out.println();
+        System.out.println(RESET_BG_COLOR);
+        setBlack(out);
         System.out.print(nums[2]);
         drawMiddle(out, "\u001b[107m", "\u001b[100m");
+        setBlack(out);
         System.out.print(nums[2]);
-        out.println();
+        System.out.println(RESET_BG_COLOR);
+        setBlack(out);
         System.out.print(nums[3]);
         drawMiddle(out, "\u001b[100m", "\u001b[107m");
+        setBlack(out);
         System.out.print(nums[3]);
-        out.println();
+        System.out.println(RESET_BG_COLOR);
 
     }
 
@@ -98,34 +104,45 @@ public class ChessBoardLayout {
         }
     }
 
-    private void drawRow2(PrintStream out, String piece) {
-        System.out.print(" 2 ");
+    private void drawBottomPawns(PrintStream out, String piece, int row) {
+        setBlack(out);
+        System.out.printf(" %d ", row);
         setGreen(out);
+        if (team == WHITE) {
+            setBlue(out);
+        }
         for (int i = 0; i < 4; i++) {
             System.out.print("\u001b[107m" + piece);
             System.out.print("\u001b[100m" + piece);
         }
         setBlack(out);
-        System.out.print(" 2 ");
-        out.println();
+        System.out.printf(" %d ", row);
+        System.out.println(RESET_BG_COLOR);
     }
 
-    private void drawRow7(PrintStream out, String piece) {
-        System.out.print(" 7 ");
+    private void drawTopPawns(PrintStream out, String piece, int row) {
+        setBlack(out);
+        System.out.printf(" %d ", row);
         setBlue(out);
+        if (team == WHITE) {
+            setGreen(out);
+        }
         for (int i = 0; i < 4; i++) {
             System.out.print("\u001b[100m" + piece);
             System.out.print("\u001b[107m" + piece);
         }
         setBlack(out);
-        System.out.print(" 7 ");
-        out.println();
+        System.out.printf(" %d ", row);
+        System.out.println(RESET_BG_COLOR);
     }
 
-    private void drawRow1(PrintStream out, String[] pieces) {
+    private void drawBottomRow(PrintStream out, String[] pieces, int row) {
         setBlack(out);
-        System.out.print(" 1 ");
+        System.out.printf(" %d ", row);
         setGreen(out);
+        if (team == WHITE) {
+            setBlue(out);
+        }
         System.out.print("\u001b[100m" + pieces[0]);
         System.out.print("\u001b[107m" + pieces[1]);
         System.out.print("\u001b[100m" + pieces[2]);
@@ -135,15 +152,18 @@ public class ChessBoardLayout {
         System.out.print("\u001b[100m" + pieces[6]);
         System.out.print("\u001b[107m" + pieces[7]);
         setBlack(out);
-        System.out.print(" 1 ");
-        out.println();
+        System.out.printf(" %d ", row);
+        System.out.println(RESET_BG_COLOR);
     }
 
 
-    private void drawRow8(PrintStream out, String[] pieces) {
+    private void drawTopRow(PrintStream out, String[] pieces, int row) {
         setBlack(out);
-        System.out.print(" 8 ");
+        System.out.printf(" %d ", row);
         setBlue(out);
+        if (team == WHITE) {
+            setGreen(out);
+        }
         System.out.print("\u001b[107m" + pieces[0]);
         System.out.print("\u001b[100m" + pieces[1]);
         System.out.print("\u001b[107m" + pieces[2]);
@@ -153,8 +173,8 @@ public class ChessBoardLayout {
         System.out.print("\u001b[107m" + pieces[6]);
         System.out.print("\u001b[100m" + pieces[7]);
         setBlack(out);
-        System.out.print(" 8 ");
-        out.println();
+        System.out.printf(" %d ", row);
+        System.out.println(RESET_BG_COLOR);
     }
 
     private void setBlack(PrintStream out) {
