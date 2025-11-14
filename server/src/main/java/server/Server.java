@@ -62,7 +62,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
 
     }
@@ -84,7 +85,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
     }
 
@@ -108,7 +110,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
     }
 
@@ -125,7 +128,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
     }
 
@@ -143,7 +147,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
     }
 
@@ -166,7 +171,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
     }
 
@@ -191,7 +197,8 @@ public class Server {
             ctx.status(e.getStatusCode());
             ctx.json(serializer.toJson(e.getErrorResponse()));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            ctx.status(500);
+            ctx.json(Map.of("message", "Error: server error"));
         }
     }
 
