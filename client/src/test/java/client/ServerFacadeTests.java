@@ -89,7 +89,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void UnauthorizedListGames() throws Exception {
+    public void unauthorizedListGames() throws Exception {
         var user1 = new UserData("michael", "star", "@");
         serverFacade.register(user1);
         assertThrows(UnauthorizedException.class, () -> serverFacade.listGames("random"));

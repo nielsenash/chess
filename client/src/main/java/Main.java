@@ -1,4 +1,8 @@
 import client.ChessClient;
+import ui.ChessBoardLayout;
+
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,9 +14,12 @@ public class Main {
         }
 
         try {
-            var chessClient = new ChessClient(serverUrl);
-            chessClient.clear();
-            chessClient.run();
+            var chessBoardLayout = new ChessBoardLayout(WHITE);
+            chessBoardLayout.printBoard();
+
+//            var chessClient = new ChessClient(serverUrl);
+//            chessClient.clear();
+//            chessClient.run();
 
         } catch (Throwable ex) {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
