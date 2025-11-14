@@ -6,13 +6,20 @@ import model.UserData;
 
 import java.util.Scanner;
 
+import static client.State.SIGNEDOUT;
+
 public class ChessClient {
-    private State state = State.SIGNEDOUT;
+    private State state = SIGNEDOUT;
     private final ServerFacade serverFacade;
     private String authToken;
+    private int numGames = 0;
 
     public ChessClient(String serverUrl) {
         serverFacade = new ServerFacade(serverUrl);
+    }
+
+    public void clear() throws Exception {
+        serverFacade.clear();
     }
 
     public void run() {
@@ -34,17 +41,24 @@ public class ChessClient {
     public String eval(String input) throws Exception {
         var entries = input.split(" ");
         var command = entries[0];
-        return switch (command) {
+        return (state == SIGNEDOUT) ? switch (command) {
             case "help" -> help();
             case "register" -> register(entries);
             case "login" -> login(entries);
-            case "logout" -> logout(entries);
-            case "create" -> createGame(entries);
-            case "list" -> listGames(entries);
-            case "join" -> joinGame(entries);
-            case "observe" -> observeGame(entries);
+            case "quit" -> "quit";
             default -> "Invalid Option";
-        };
+        } :
+                switch (command) {
+                    case "help" -> help();
+                    case "logout" -> logout(entries);
+                    case "create" -> createGame(entries);
+                    case "list" -> listGames(entries);
+                    case "join" -> joinGame(entries);
+                    case "observe" -> observeGame(entries);
+                    case "quit" -> "quit";
+                    default -> "Invalid Option";
+                };
+
     }
 
     public String help() {
@@ -92,7 +106,7 @@ public class ChessClient {
             throw new Exception("Invalid input");
         }
         serverFacade.logout(authToken);
-        state = State.SIGNEDOUT;
+        state = SIGNEDOUT;
         return "Successfully logged out user\n" + help();
     }
 
@@ -100,7 +114,18 @@ public class ChessClient {
         if (entries.length != 1) {
             throw new Exception("Invalid input");
         }
-        return serverFacade.listGames(authToken).toString();
+        if (numGames == 0) {
+            return "No games found";
+        }
+
+        var games = serverFacade.listGames(authToken);
+        StringBuilder gamesList = new StringBuilder();
+        for (int i = 0; i < games.size(); i++) {
+            String gameInfo = String.format("Game: %d\n - Name: %s\n - White User: %s\n - Black User: %s\n",
+                    i + 1, games.get(i).gameName(), games.get(i).whiteUsername(), games.get(i).blackUsername());
+            gamesList.append(gameInfo);
+        }
+        return gamesList.toString();
     }
 
     public String createGame(String[] entries) throws Exception {
@@ -108,6 +133,7 @@ public class ChessClient {
             throw new Exception("Invalid input");
         }
         serverFacade.createGame(entries[1], authToken);
+        numGames++;
         return "Game with name " + entries[1] + " has been created";
     }
 
@@ -115,7 +141,6 @@ public class ChessClient {
         if (entries.length != 3) {
             throw new Exception("Invalid input");
         }
-
         int gameId;
         ChessGame.TeamColor color;
         try {
@@ -124,6 +149,10 @@ public class ChessClient {
         } catch (Exception e) {
             throw new Exception("Game ID must be a number and color must be of the form [WHITE/BLACK]");
         }
+        if (gameId > numGames) {
+            throw new Exception("Game " + gameId + " does not exist");
+        }
+
         serverFacade.joinGame(gameId, color, authToken);
         return "Joined Game as " + entries[2] + " player";
     }
@@ -137,6 +166,9 @@ public class ChessClient {
             gameId = Integer.parseInt(entries[1]);
         } catch (Exception e) {
             throw new Exception("Game ID must be a number");
+        }
+        if (gameId > numGames) {
+            throw new Exception("Game " + gameId + " does not exist");
         }
         return "Observing game " + gameId;
     }

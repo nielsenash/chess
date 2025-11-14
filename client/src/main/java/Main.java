@@ -10,7 +10,9 @@ public class Main {
         }
 
         try {
-            new ChessClient(serverUrl).run();
+            var chessClient = new ChessClient(serverUrl);
+            chessClient.clear();
+            chessClient.run();
 
         } catch (Throwable ex) {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
