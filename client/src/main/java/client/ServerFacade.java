@@ -93,22 +93,33 @@ public class ServerFacade {
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Type responseClass) throws Exception {
-        var status = response.statusCode();
-        if (!isSuccessful(status)) {
-            switch (status) {
-                case 400 -> throw new BadRequestException("Error: Bad Request");
-                case 401 -> throw new UnauthorizedException("Error: Unauthorized");
-                case 403 -> throw new AlreadyTakenException("Error: Already Taken");
-                default -> throw new Exception("Error: Server Error");
+        int status = response.statusCode();
+        Gson gson = new Gson();
+
+        if (isSuccessful(status)) {
+            if (responseClass == null) {
+                return null;
             }
+            return gson.fromJson(response.body(), responseClass);
         }
 
-        if (responseClass != null) {
-            return new Gson().fromJson(response.body(), responseClass);
+        ErrorResponse error;
+        try {
+            error = gson.fromJson(response.body(), ErrorResponse.class);
+        } catch (Exception e) {
+            error = new ErrorResponse("Error: server error");
         }
+        String message = error.message();
 
-        return null;
+        switch (status) {
+            case 400 -> throw new BadRequestException(message);
+            case 401 -> throw new UnauthorizedException(message);
+            case 403 -> throw new AlreadyTakenException(message);
+            case 500 -> throw new Exception(message);
+            default -> throw new Exception(message);
+        }
     }
+
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
