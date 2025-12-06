@@ -1,5 +1,6 @@
 package webSocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AuthDataAccess;
 import dataaccess.GameDataAccess;
@@ -10,7 +11,10 @@ import io.javalin.websocket.WsConnectContext;
 import io.javalin.websocket.WsConnectHandler;
 import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
+import model.AuthData;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
@@ -43,8 +47,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
-//                case MAKE_MOVE ->
-//                case LEAVE ->
+//                case MAKE_MOVE -> makeMove(command, ctx.session);
+                case LEAVE -> leave(command, ctx.session);
 //                case RESIGN ->
                 case CONNECT -> connect(command, ctx.session);
             }
@@ -58,18 +62,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         System.out.println("Websocket closed");
     }
 
-    public void connect(UserGameCommand command, Session session) throws Exception {
-        var user = authDao.getAuth(command.getAuthToken());
+    public boolean validate(Session session, AuthData user, GameData game) throws Exception {
         if (user == null) {
             sendError(session, "Error: Invalid Auth");
+            return false;
+        }
+        if (game == null) {
+            sendError(session, "Error: Game not found");
+            return false;
+        }
+        return true;
+    }
+
+
+    public void connect(UserGameCommand command, Session session) throws Exception {
+
+        var user = authDao.getAuth(command.getAuthToken());
+        var game = gameDao.getGame(command.getGameID());
+        if (!validate(session, user, game)) {
             return;
         }
 
-        var game = gameDao.getGame(command.getGameID());
-        if (game == null) {
-            sendError(session, "Error: Game not found");
-            return;
-        }
 
         connectionManager.add(command.getGameID(), session);
         System.out.println(connectionManager.getSessions());
@@ -90,6 +103,23 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         NotificationMessage notification = new NotificationMessage(notificationMessage);
         connectionManager.broadcast(command.getGameID(), session, notification);
+    }
+
+    public void leave(UserGameCommand command, Session session) throws Exception {
+        var user = authDao.getAuth(command.getAuthToken());
+        var game = gameDao.getGame(command.getGameID());
+        validate(session, user, game);
+        connectionManager.remove(game.gameID(), session);
+
+        String username = user.username();
+        String notificationMessage = username + " left the game";
+
+        NotificationMessage notification = new NotificationMessage(notificationMessage);
+        connectionManager.broadcast(command.getGameID(), session, notification);
+    }
+
+    public void makeMove(MakeMoveCommand command, Session session) {
+        var move = command.getMove();
     }
 
     private void sendError(Session session, String errorMessage) throws Exception {
