@@ -12,6 +12,9 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
@@ -57,9 +60,39 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     public void connect(UserGameCommand command, Session session) throws Exception {
         var user = authDao.getAuth(command.getAuthToken());
-        if (user != null) {
-            var game = gameDao.getGame(command.getGameID());
-            connectionManager.add(command.getGameID(), session);
+        if (user == null) {
+            sendError(session, "Error: Invalid Auth");
+            return;
         }
+
+        var game = gameDao.getGame(command.getGameID());
+        if (game == null) {
+            sendError(session, "Error: Game not found");
+            return;
+        }
+
+        connectionManager.add(command.getGameID(), session);
+        LoadGameMessage message = new LoadGameMessage(game.game());
+        session.getRemote().sendString(new Gson().toJson(message));
+
+
+        String username = user.username();
+        String notificationMessage;
+
+        if (username.equals(game.whiteUsername())) {
+            notificationMessage = username + " joined the game as white";
+        } else if (username.equals(game.blackUsername())) {
+            notificationMessage = username + " joined the game as black";
+        } else {
+            notificationMessage = username + " joined the game as an observer";
+        }
+
+        NotificationMessage notification = new NotificationMessage(notificationMessage);
+        connectionManager.broadcast(command.getGameID(), session, notification);
+    }
+    
+    private void sendError(Session session, String errorMessage) throws Exception {
+        ErrorMessage error = new ErrorMessage(errorMessage);
+        session.getRemote().sendString(new Gson().toJson(error));
     }
 }
