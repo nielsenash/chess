@@ -31,7 +31,7 @@ public class ConnectionManager {
 
         var json = new Gson().toJson(message);
         for (var session : s) {
-            if (session != exclude) {
+            if (session != exclude && session.isOpen()) {
                 session.getRemote().sendString(json);
             }
         }
@@ -39,6 +39,10 @@ public class ConnectionManager {
 
     public void send(Session session, Object message) throws IOException {
         session.getRemote().sendString(new Gson().toJson(message));
+    }
+
+    public Map<Integer, Set<Session>> getSessions() {
+        return sessions;
     }
 }
 

@@ -72,6 +72,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         connectionManager.add(command.getGameID(), session);
+        System.out.println(connectionManager.getSessions());
         LoadGameMessage message = new LoadGameMessage(game.game());
         session.getRemote().sendString(new Gson().toJson(message));
 
@@ -90,7 +91,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         NotificationMessage notification = new NotificationMessage(notificationMessage);
         connectionManager.broadcast(command.getGameID(), session, notification);
     }
-    
+
     private void sendError(Session session, String errorMessage) throws Exception {
         ErrorMessage error = new ErrorMessage(errorMessage);
         session.getRemote().sendString(new Gson().toJson(error));
