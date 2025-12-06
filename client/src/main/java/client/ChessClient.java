@@ -1,23 +1,28 @@
 package client;
 
 import chess.ChessGame;
+import client.webSocket.NotificationHandler;
+import client.webSocket.WebSocketFacade;
 import model.LoginRequest;
 import model.UserData;
 import ui.ChessBoardLayout;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
 import static chess.ChessGame.TeamColor.WHITE;
 import static client.State.SIGNEDOUT;
 
-public class ChessClient {
+public class ChessClient implements NotificationHandler {
     private State state = SIGNEDOUT;
     private final ServerFacade serverFacade;
+    private final WebSocketFacade webSocketFacade;
     private String authToken;
     private int numGames = 0;
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl) throws Exception {
         serverFacade = new ServerFacade(serverUrl);
+        webSocketFacade = new WebSocketFacade(serverUrl, this);
     }
 
     public void clear() throws Exception {
@@ -179,5 +184,10 @@ public class ChessClient {
         var chessBoardLayout = new ChessBoardLayout(WHITE);
         chessBoardLayout.printBoard();
         return "Observing game " + gameId;
+    }
+
+    @Override
+    public void notify(ServerMessage message) {
+        System.out.println(message);
     }
 }
