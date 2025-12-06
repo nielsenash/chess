@@ -57,7 +57,7 @@ public class Server {
         server.ws("/ws", ws -> {
             ws.onConnect(webSocketHandler);
             ws.onMessage(ctx -> {
-                UserGameCommand command = ctx.messageAsClass(UserGameCommand.class);
+                UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
                 if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
                     webSocketHandler.connect(command, ctx.session);
                 } else {
