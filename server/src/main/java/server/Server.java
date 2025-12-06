@@ -11,6 +11,8 @@ import model.*;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
+import webSocket.WebSocketHandler;
+import websocket.commands.UserGameCommand;
 
 import java.util.Map;
 
@@ -30,9 +32,12 @@ public class Server {
     private final AuthDataAccess authDataAccess = new SqlAuthDataAccess();
     private final AuthService authService = new AuthService(authDataAccess);
 
+    private final WebSocketHandler webSocketHandler;
+
 
     public Server() {
         server = Javalin.create(config -> config.staticFiles.add("web"));
+        webSocketHandler = new WebSocketHandler(authDataAccess, gameDataAccess, userDataAccess);
         try {
             DatabaseManager.configureDatabase();
         } catch (Exception e) {
@@ -49,6 +54,18 @@ public class Server {
         server.get("game", this::listGames);
         server.post("game", this::createGame);
         server.put("game", this::joinGame);
+        server.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler);
+            ws.onMessage(ctx -> {
+                UserGameCommand command = ctx.messageAsClass(UserGameCommand.class);
+                if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
+                    webSocketHandler.connect(command, ctx.session);
+                } else {
+                    webSocketHandler.handleMessage(ctx);
+                }
+            });
+            ws.onClose(webSocketHandler);
+        });
     }
 
     private void clear(Context ctx) {
