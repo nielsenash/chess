@@ -1,6 +1,8 @@
 package service;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaccess.GameDataAccess;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
@@ -41,6 +43,15 @@ public class GameService {
             throw new AlreadyTakenException("Error: already taken");
         }
         gameDataAccess.joinGame(playerColor, gameID, username);
+    }
+
+    public void updateGame(Integer gameID, ChessMove move) throws Exception {
+        try {
+            gameDataAccess.updateGame(gameID, move);
+        } catch (InvalidMoveException e) {
+            throw new InvalidMoveException("Error: Invalid Move");
+        }
+
     }
 
 }
