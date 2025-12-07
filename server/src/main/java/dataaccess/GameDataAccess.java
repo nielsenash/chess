@@ -1,6 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -14,5 +16,7 @@ public interface GameDataAccess {
 
     void joinGame(ChessGame.TeamColor playerColor, Integer gameID, String username) throws DataAccessException;
 
-    GameData getGame(Integer gameId) throws DataAccessException;
+    GameData getGame(Integer gameID) throws DataAccessException;
+
+    void updateGame(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException;
 }

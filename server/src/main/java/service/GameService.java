@@ -7,8 +7,6 @@ import exceptions.BadRequestException;
 import model.GameData;
 
 import java.util.ArrayList;
-import java.util.Collection;
-
 
 public class GameService {
     private final GameDataAccess gameDataAccess;

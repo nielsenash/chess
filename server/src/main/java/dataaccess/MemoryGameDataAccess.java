@@ -1,6 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -45,5 +47,13 @@ public class MemoryGameDataAccess implements GameDataAccess {
     @Override
     public GameData getGame(Integer gameID) {
         return games.get(gameID);
+    }
+
+    @Override
+    public void updateGame(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+        var oldGame = games.get(gameID);
+        var newGame = oldGame.game().makeMove(move);
+        var gameData = new GameData(gameID, oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), newGame);
+        games.put(gameID, gameData);
     }
 }

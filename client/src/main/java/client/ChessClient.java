@@ -157,6 +157,7 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Game ID must be a number and color must be of the form [WHITE/BLACK]");
         }
         if (gameId > numGames) {
+
             throw new Exception("Game " + gameId + " does not exist");
         }
 
