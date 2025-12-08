@@ -174,7 +174,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameService.setGameOver(game.gameID());
 
         NotificationMessage notification = new NotificationMessage(username + " resigned the game");
-        connectionManager.broadcast(command.getGameID(), session, notification);
+        connectionManager.broadcast(command.getGameID(), null, notification);
     }
 
     private void sendError(Session session, String error) throws Exception {
