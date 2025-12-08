@@ -37,7 +37,7 @@ public class Server {
 
     public Server() {
         server = Javalin.create(config -> config.staticFiles.add("web"));
-        webSocketHandler = new WebSocketHandler(authDataAccess, gameDataAccess, userDataAccess);
+        webSocketHandler = new WebSocketHandler(authDataAccess, gameDataAccess);
         try {
             DatabaseManager.configureDatabase();
         } catch (Exception e) {

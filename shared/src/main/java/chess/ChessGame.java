@@ -14,6 +14,7 @@ import static chess.ChessGame.TeamColor.WHITE;
  */
 public class ChessGame {
 
+    private boolean gameOver = false;
     private TeamColor team = WHITE;
     private ChessBoard chessBoard;
 
@@ -33,6 +34,11 @@ public class ChessGame {
 
     public ChessBoard getChessBoard() {
         return chessBoard;
+    }
+
+    public ChessGame setGameOver() {
+        gameOver = true;
+        return this;
     }
 
     /**
@@ -95,6 +101,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public ChessGame makeMove(ChessMove move) throws InvalidMoveException {
+        if (gameOver) {
+            throw new InvalidMoveException("Game Over");
+        }
         ChessPiece piece = chessBoard.getPiece(move.startPosition);
         if (piece.pieceColor != team) {
             throw new InvalidMoveException("Not your team's piece!");
@@ -191,6 +200,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        setGameOver();
         return (isInCheck(teamColor) && hasNoMoves(teamColor));
     }
 

@@ -5,7 +5,6 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDataAccess;
 import dataaccess.GameDataAccess;
-import dataaccess.UserDataAccess;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
 import io.javalin.websocket.WsConnectContext;
@@ -31,15 +30,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final ConnectionManager connectionManager = new ConnectionManager();
     private final AuthDataAccess authDao;
     private final GameDataAccess gameDao;
-    private final UserDataAccess userDao;
 
     private final GameService gameService;
 
 
-    public WebSocketHandler(AuthDataAccess authDao, GameDataAccess gameDao, UserDataAccess userDao) {
+    public WebSocketHandler(AuthDataAccess authDao, GameDataAccess gameDao) {
         this.authDao = authDao;
         this.gameDao = gameDao;
-        this.userDao = userDao;
         this.gameService = new GameService(gameDao);
     }
 
@@ -60,7 +57,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()) {
                 case MAKE_MOVE -> makeMove(ctx);
                 case LEAVE -> leave(command, ctx.session);
-//                case RESIGN ->
+                case RESIGN -> resign(command, ctx.session);
                 case CONNECT -> connect(command, ctx.session);
             }
         } catch (Exception ex) {
@@ -94,7 +91,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         connectionManager.add(command.getGameID(), session);
-        //System.out.println(connectionManager.getSessions());
         LoadGameMessage message = new LoadGameMessage(game.game());
         session.getRemote().sendString(new Gson().toJson(message));
 
@@ -159,7 +155,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         } catch (InvalidMoveException e) {
             sendError(session, "Error: Invalid Move");
         }
+    }
 
+    public void resign(UserGameCommand command, Session session) throws Exception {
 
     }
 

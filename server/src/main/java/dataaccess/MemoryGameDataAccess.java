@@ -65,4 +65,12 @@ public class MemoryGameDataAccess implements GameDataAccess {
         var gameData = new GameData(gameID, whiteUsername, blackUsername, game.gameName(), game.game());
         games.put(gameID, gameData);
     }
+
+    @Override
+    public void setGameOver(Integer gameID) throws DataAccessException {
+        var game = games.get(gameID);
+        var newGame = game.game().setGameOver();
+        var gameData = new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), newGame);
+        games.put(gameID, gameData);
+    }
 }

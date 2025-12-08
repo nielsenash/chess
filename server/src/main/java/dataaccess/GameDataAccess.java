@@ -21,4 +21,6 @@ public interface GameDataAccess {
     void updateBoard(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException;
 
     void removePlayer(Integer gameID, String username) throws DataAccessException;
+
+    void setGameOver(Integer gameID) throws DataAccessException;
 }
