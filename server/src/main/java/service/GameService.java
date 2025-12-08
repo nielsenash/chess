@@ -58,5 +58,9 @@ public class GameService {
         gameDataAccess.removePlayer(gameID, username);
     }
 
+    public void setGameOver(Integer gameID) throws DataAccessException {
+        gameDataAccess.setGameOver(gameID);
+    }
+
 
 }

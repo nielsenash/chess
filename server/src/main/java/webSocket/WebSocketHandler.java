@@ -113,7 +113,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     public void leave(UserGameCommand command, Session session) throws Exception {
         var user = authDao.getAuth(command.getAuthToken());
         var game = gameDao.getGame(command.getGameID());
-        validate(session, user, game);
+        if (!validate(session, user, game)) {
+            return;
+        }
 
         gameService.removePlayer(game.gameID(), user.username());
         connectionManager.remove(game.gameID(), session);
@@ -158,7 +160,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     public void resign(UserGameCommand command, Session session) throws Exception {
+        var user = authDao.getAuth(command.getAuthToken());
+        var game = gameDao.getGame(command.getGameID());
+        if (!validate(session, user, game)) {
+            return;
+        }
+        String username = user.username();
+        if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
+            sendError(session, "Error: Observer cannot resign");
+            return;
+        }
 
+        gameService.setGameOver(game.gameID());
+
+        NotificationMessage notification = new NotificationMessage(username + " resigned the game");
+        connectionManager.broadcast(command.getGameID(), session, notification);
     }
 
     private void sendError(Session session, String error) throws Exception {
