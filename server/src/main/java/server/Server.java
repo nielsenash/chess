@@ -64,7 +64,10 @@ public class Server {
                     webSocketHandler.handleMessage(ctx);
                 }
             });
-            ws.onClose(webSocketHandler);
+            ws.onClose(ctx -> {
+                Integer gameID = webSocketHandler.getConnectionManager().getGameID(ctx.session);
+                webSocketHandler.getConnectionManager().remove(gameID, ctx.session);
+            });
         });
     }
 

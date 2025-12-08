@@ -11,9 +11,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager {
 
     private final Map<Integer, Set<Session>> sessions = new ConcurrentHashMap<>();
+    private final Map<Session, Integer> gameConnections = new ConcurrentHashMap<>();
+
+
+    public Integer getGameID(Session session) {
+        return gameConnections.get(session);
+    }
 
     public void add(Integer gameID, Session session) {
         sessions.computeIfAbsent(gameID, id -> ConcurrentHashMap.newKeySet()).add(session);
+        gameConnections.put(session, gameID);
     }
 
     public void remove(Integer gameID, Session session) {
@@ -21,6 +28,7 @@ public class ConnectionManager {
         if (s != null) {
             s.remove(session);
         }
+        gameConnections.remove(session);
     }
 
     public void broadcast(Integer gameID, Session exclude, Object message) throws IOException {

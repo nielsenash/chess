@@ -22,8 +22,6 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
-import java.util.Objects;
-
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
@@ -45,6 +43,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         this.gameService = new GameService(gameDao);
     }
 
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
+    }
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
