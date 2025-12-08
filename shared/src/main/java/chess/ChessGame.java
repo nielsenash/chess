@@ -109,6 +109,9 @@ public class ChessGame {
             throw new InvalidMoveException("Game Over");
         }
         ChessPiece piece = chessBoard.getPiece(move.startPosition);
+        if (piece == null) {
+            throw new InvalidMoveException("No piece at start position");
+        }
         if (piece.pieceColor != team) {
             throw new InvalidMoveException("Not your team's piece!");
         }
