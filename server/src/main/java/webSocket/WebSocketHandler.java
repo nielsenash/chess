@@ -1,5 +1,6 @@
 package webSocket;
 
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDataAccess;
 import dataaccess.GameDataAccess;
@@ -129,14 +130,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         validate(session, user, game);
         String username = user.username();
 
-        gameService.updateGame(command.getGameID(), move);
+        try {
+            gameService.updateGame(command.getGameID(), move);
+            NotificationMessage notification = new NotificationMessage(username + " made the move: " + move.toString() + ".\nIt's your turn!");
+            connectionManager.broadcast(command.getGameID(), session, notification);
 
-        NotificationMessage notification = new NotificationMessage(username + " made the move: " + move.toString() + ".\nIt's your turn!");
-        connectionManager.broadcast(command.getGameID(), session, notification);
+            LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
+            //send a message to everyone
+            connectionManager.broadcast(command.getGameID(), null, loadGameMessage);
+        } catch (InvalidMoveException e) {
+            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid Move");
+            connectionManager.send(session, errorMessage);
+        }
 
-        LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
-        //send a message to everyone
-        connectionManager.broadcast(command.getGameID(), null, loadGameMessage);
 
     }
 
