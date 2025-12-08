@@ -104,13 +104,30 @@ public class SqlGameDataAccess implements GameDataAccess {
     }
 
     @Override
-    public void updateGame(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+    public void updateBoard(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
         try (var conn = getConnection()) {
             var gameData = getGame(gameID);
             var newGame = gameData.game().makeMove(move);
             try (var preparedStatement = conn.prepareStatement("UPDATE game SET game = ? WHERE gameID = ?;")) {
                 preparedStatement.setString(1, new Gson().toJson(newGame, ChessGame.class));
                 preparedStatement.setInt(2, gameID);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void removePlayer(Integer gameID, String username) throws DataAccessException {
+        try (var conn = getConnection()) {
+            var gameData = getGame(gameID);
+            var whiteUsername = username.equals(gameData.whiteUsername()) ? null : gameData.whiteUsername();
+            var blackUsername = username.equals(gameData.blackUsername()) ? null : gameData.blackUsername();
+            try (var preparedStatement = conn.prepareStatement("UPDATE game SET whiteUsername = ?, blackUsername = ? WHERE gameID = ?;")) {
+                preparedStatement.setString(1, whiteUsername);
+                preparedStatement.setString(2, blackUsername);
+                preparedStatement.setInt(3, gameID);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {

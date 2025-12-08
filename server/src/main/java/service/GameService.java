@@ -3,6 +3,7 @@ package service;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.InvalidMoveException;
+import dataaccess.DataAccessException;
 import dataaccess.GameDataAccess;
 import exceptions.AlreadyTakenException;
 import exceptions.BadRequestException;
@@ -45,13 +46,16 @@ public class GameService {
         gameDataAccess.joinGame(playerColor, gameID, username);
     }
 
-    public void updateGame(Integer gameID, ChessMove move) throws Exception {
+    public void updateBoard(Integer gameID, ChessMove move) throws Exception {
         try {
-            gameDataAccess.updateGame(gameID, move);
+            gameDataAccess.updateBoard(gameID, move);
         } catch (InvalidMoveException e) {
             throw new InvalidMoveException("Error: Invalid Move");
         }
+    }
 
+    public void removePlayer(Integer gameID, String username) throws DataAccessException {
+        gameDataAccess.removePlayer(gameID, username);
     }
 
 }

@@ -118,6 +118,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         var user = authDao.getAuth(command.getAuthToken());
         var game = gameDao.getGame(command.getGameID());
         validate(session, user, game);
+
+        gameService.removePlayer(game.gameID(), user.username());
         connectionManager.remove(game.gameID(), session);
 
         String username = user.username();
@@ -147,7 +149,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         try {
-            gameService.updateGame(command.getGameID(), move);
+            gameService.updateBoard(command.getGameID(), move);
             NotificationMessage notification = new NotificationMessage(username + " made the move: " + move.toString() + ".\nIt's your turn!");
             connectionManager.broadcast(command.getGameID(), session, notification);
 

@@ -50,10 +50,19 @@ public class MemoryGameDataAccess implements GameDataAccess {
     }
 
     @Override
-    public void updateGame(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
+    public void updateBoard(Integer gameID, ChessMove move) throws DataAccessException, InvalidMoveException {
         var oldGame = games.get(gameID);
         var newGame = oldGame.game().makeMove(move);
         var gameData = new GameData(gameID, oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), newGame);
+        games.put(gameID, gameData);
+    }
+
+    @Override
+    public void removePlayer(Integer gameID, String username) throws DataAccessException {
+        var game = games.get(gameID);
+        var whiteUsername = username.equals(game.whiteUsername()) ? null : game.whiteUsername();
+        var blackUsername = username.equals(game.blackUsername()) ? null : game.blackUsername();
+        var gameData = new GameData(gameID, whiteUsername, blackUsername, game.gameName(), game.game());
         games.put(gameID, gameData);
     }
 }
