@@ -1,4 +1,4 @@
-package webSocket;
+package websocket;
 
 import chess.ChessGame;
 import chess.InvalidMoveException;

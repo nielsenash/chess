@@ -11,7 +11,7 @@ import model.*;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
-import webSocket.WebSocketHandler;
+import websocket.WebSocketHandler;
 import websocket.commands.UserGameCommand;
 
 import java.util.Map;

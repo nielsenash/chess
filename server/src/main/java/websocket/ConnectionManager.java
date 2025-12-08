@@ -1,4 +1,4 @@
-package webSocket;
+package websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
@@ -47,10 +47,6 @@ public class ConnectionManager {
 
     public void send(Session session, Object message) throws IOException {
         session.getRemote().sendString(new Gson().toJson(message));
-    }
-
-    public Map<Integer, Set<Session>> getSessions() {
-        return sessions;
     }
 }
 
