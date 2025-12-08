@@ -58,7 +58,6 @@ public class ChessGame {
     //ensures a move doesn't put the king in check
     public boolean isValid(ChessMove move) {
         var pretendGame = copy();
-        //passing in color instead of team allows checking for check when it's not your turn
         var color = pretendGame.chessBoard.getPiece(move.startPosition).pieceColor;
         pretendGame.chessBoard.makeMove(move);
         return !pretendGame.isInCheck(color);
@@ -95,7 +94,7 @@ public class ChessGame {
         if (!validMoves(move.startPosition).contains(move)) {
             throw new InvalidMoveException("Invalid Move");
         } else if (chessBoard.getPiece(move.startPosition).pieceColor != team) {
-            throw new InvalidMoveException("Not your team's turn!");
+            throw new InvalidMoveException("Not your team's piece!");
         }
         chessBoard.makeMove(move);
         var newTeam = team == WHITE ? TeamColor.BLACK : WHITE;
