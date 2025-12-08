@@ -21,6 +21,8 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 
+import java.util.Objects;
+
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -70,8 +72,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         if (user == null) {
             sendError(session, "Error: Invalid Auth");
             return false;
-        }
-        if (game == null) {
+        } else if (game == null) {
             sendError(session, "Error: Game not found");
             return false;
         }
@@ -129,6 +130,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         var game = gameDao.getGame(command.getGameID());
         validate(session, user, game);
         String username = user.username();
+        if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
+            sendError(session, "Error: Observer cannot make moves");
+            return;
+        }
 
         try {
             gameService.updateGame(command.getGameID(), move);
@@ -139,15 +144,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             //send a message to everyone
             connectionManager.broadcast(command.getGameID(), null, loadGameMessage);
         } catch (InvalidMoveException e) {
-            ErrorMessage errorMessage = new ErrorMessage("Error: Invalid Move");
-            connectionManager.send(session, errorMessage);
+            sendError(session, "Error: Invalid Move");
         }
 
 
     }
 
-    private void sendError(Session session, String errorMessage) throws Exception {
-        ErrorMessage error = new ErrorMessage(errorMessage);
-        session.getRemote().sendString(new Gson().toJson(error));
+    private void sendError(Session session, String error) throws Exception {
+        ErrorMessage errorMessage = new ErrorMessage(error);
+        connectionManager.send(session, errorMessage);
     }
 }
