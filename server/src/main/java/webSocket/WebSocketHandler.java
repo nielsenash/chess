@@ -170,6 +170,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "Error: Observer cannot resign");
             return;
         }
+        if (game.game().isGameOver()) {
+            sendError(session, "Error: Game is already over");
+            return;
+        }
 
         gameService.setGameOver(game.gameID());
 
