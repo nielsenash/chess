@@ -1,6 +1,5 @@
 package webSocket;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.AuthDataAccess;
 import dataaccess.GameDataAccess;
@@ -14,6 +13,7 @@ import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
+import service.GameService;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
@@ -28,11 +28,14 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final GameDataAccess gameDao;
     private final UserDataAccess userDao;
 
+    private final GameService gameService;
+
 
     public WebSocketHandler(AuthDataAccess authDao, GameDataAccess gameDao, UserDataAccess userDao) {
         this.authDao = authDao;
         this.gameDao = gameDao;
         this.userDao = userDao;
+        this.gameService = new GameService(gameDao);
     }
 
 
@@ -47,7 +50,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         try {
             UserGameCommand command = new Gson().fromJson(ctx.message(), UserGameCommand.class);
             switch (command.getCommandType()) {
-//                case MAKE_MOVE -> makeMove(command, ctx.session);
+                case MAKE_MOVE -> makeMove(ctx);
                 case LEAVE -> leave(command, ctx.session);
 //                case RESIGN ->
                 case CONNECT -> connect(command, ctx.session);
@@ -83,7 +86,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-
         connectionManager.add(command.getGameID(), session);
         System.out.println(connectionManager.getSessions());
         LoadGameMessage message = new LoadGameMessage(game.game());
@@ -118,8 +120,24 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connectionManager.broadcast(command.getGameID(), session, notification);
     }
 
-    public void makeMove(MakeMoveCommand command, Session session) {
+    public void makeMove(WsMessageContext ctx) throws Exception {
+        var session = ctx.session;
+        MakeMoveCommand command = new Gson().fromJson(ctx.message(), MakeMoveCommand.class);
         var move = command.getMove();
+        var user = authDao.getAuth(command.getAuthToken());
+        var game = gameDao.getGame(command.getGameID());
+        validate(session, user, game);
+        String username = user.username();
+
+        gameService.updateGame(command.getGameID(), move);
+
+        NotificationMessage notification = new NotificationMessage(username + " made the move: " + move.toString() + ".\nIt's your turn!");
+        connectionManager.broadcast(command.getGameID(), session, notification);
+
+        LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
+        //send a message to everyone
+        connectionManager.broadcast(command.getGameID(), null, loadGameMessage);
+
     }
 
     private void sendError(Session session, String errorMessage) throws Exception {
