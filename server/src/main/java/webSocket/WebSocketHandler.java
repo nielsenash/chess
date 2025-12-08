@@ -1,5 +1,6 @@
 package webSocket;
 
+import chess.ChessGame;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDataAccess;
@@ -23,6 +24,9 @@ import websocket.messages.NotificationMessage;
 
 import java.util.Objects;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+
 
 public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsCloseHandler {
 
@@ -44,7 +48,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
-        System.out.println("Websocket connected");
+        //System.out.println("Websocket connected");
         ctx.enableAutomaticPings();
     }
 
@@ -65,7 +69,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
     @Override
     public void handleClose(WsCloseContext ctx) {
-        System.out.println("Websocket closed");
+        //System.out.println("Websocket closed");
     }
 
     public boolean validate(Session session, AuthData user, GameData game) throws Exception {
@@ -89,7 +93,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         connectionManager.add(command.getGameID(), session);
-        System.out.println(connectionManager.getSessions());
+        //System.out.println(connectionManager.getSessions());
         LoadGameMessage message = new LoadGameMessage(game.game());
         session.getRemote().sendString(new Gson().toJson(message));
 
@@ -132,6 +136,12 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         String username = user.username();
         if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
             sendError(session, "Error: Observer cannot make moves");
+            return;
+        }
+
+        ChessGame.TeamColor color = username.equals(game.whiteUsername()) ? WHITE : BLACK;
+        if (color != game.game().getChessBoard().getPiece(move.getStartPosition()).getTeamColor()) {
+            sendError(session, "Error: Cannot move opponent's piece");
             return;
         }
 

@@ -31,6 +31,10 @@ public class ChessGame {
         return newGame;
     }
 
+    public ChessBoard getChessBoard() {
+        return chessBoard;
+    }
+
     /**
      * @return Which team's turn it is
      */
@@ -91,10 +95,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public ChessGame makeMove(ChessMove move) throws InvalidMoveException {
+        ChessPiece piece = chessBoard.getPiece(move.startPosition);
+        if (piece.pieceColor != team) {
+            throw new InvalidMoveException("Not your team's piece!");
+        }
         if (!validMoves(move.startPosition).contains(move)) {
             throw new InvalidMoveException("Invalid Move");
-        } else if (chessBoard.getPiece(move.startPosition).pieceColor != team) {
-            throw new InvalidMoveException("Not your team's piece!");
         }
         chessBoard.makeMove(move);
         var newTeam = team == WHITE ? TeamColor.BLACK : WHITE;
