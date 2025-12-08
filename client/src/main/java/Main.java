@@ -11,6 +11,7 @@ public class Main {
 
         try {
             var chessClient = new ChessClient(serverUrl);
+            chessClient.clear();
             chessClient.run();
 
         } catch (Throwable ex) {

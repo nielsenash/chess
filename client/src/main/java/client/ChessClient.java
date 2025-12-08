@@ -11,7 +11,7 @@ import websocket.messages.ServerMessage;
 import java.util.Scanner;
 
 import static chess.ChessGame.TeamColor.WHITE;
-import static client.State.SIGNEDOUT;
+import static client.State.*;
 
 public class ChessClient implements NotificationHandler {
     private State state = SIGNEDOUT;
@@ -48,28 +48,40 @@ public class ChessClient implements NotificationHandler {
     public String eval(String input) throws Exception {
         var entries = input.split(" ");
         var command = entries[0];
-        return (state == SIGNEDOUT) ? switch (command) {
-            case "help" -> help();
-            case "register" -> register(entries);
-            case "login" -> login(entries);
-            case "quit" -> "quit";
-            default -> "Invalid Option";
-        } :
+        return (state == SIGNEDOUT) ?
                 switch (command) {
                     case "help" -> help();
-                    case "logout" -> logout(entries);
-                    case "create" -> createGame(entries);
-                    case "list" -> listGames(entries);
-                    case "join" -> joinGame(entries);
-                    case "observe" -> observeGame(entries);
+                    case "register" -> register(entries);
+                    case "login" -> login(entries);
                     case "quit" -> "quit";
                     default -> "Invalid Option";
-                };
+                } :
+                (state == SIGNEDIN) ?
+                        switch (command) {
+                            case "help" -> help();
+                            case "logout" -> logout(entries);
+                            case "create" -> createGame(entries);
+                            case "list" -> listGames(entries);
+                            case "join" -> joinGame(entries);
+                            case "observe" -> observeGame(entries);
+                            case "quit" -> "quit";
+                            default -> "Invalid Option";
+                        } :
+                        switch (command) {
+                            case "help" -> help();
+                            case "redraw chess board" -> null; //redraw(entries);
+                            case "leave" -> "leaving the game"; //leave(entries);
+                            case "make move" -> null; //makeMove(entries);
+                            case "resign" -> null; //resign(entries);
+                            case "highlight legal moves" -> null; //highlight(entries);
+                            default -> "Invalid Option";
+                        };
+
 
     }
 
     public String help() {
-        if (state == State.SIGNEDIN) {
+        if (state == SIGNEDIN) {
             return """
                     \nOPTIONS
                     - create <NAME>
@@ -80,14 +92,25 @@ public class ChessClient implements NotificationHandler {
                     - quit
                     - help
                     """;
+        } else if (state == SIGNEDOUT) {
+            return """
+                    \nOPTIONS
+                    - register <USERNAME> <PASSWORD> <EMAIL>
+                    - login <USERNAME> <PASSWORD>
+                    - quit
+                    - help
+                    """;
+        } else {
+            return """
+                    \nOPTIONS
+                    - redraw chess board
+                    - leave
+                    - make move <START> <END>
+                    - resign
+                    - highlight legal moves
+                    """;
         }
-        return """
-                \nOPTIONS
-                - register <USERNAME> <PASSWORD> <EMAIL>
-                - login <USERNAME> <PASSWORD>
-                - quit
-                - help
-                """;
+
     }
 
     public String register(String[] entries) throws Exception {
@@ -95,7 +118,7 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Invalid input");
         }
         authToken = serverFacade.register(new UserData(entries[1], entries[2], entries[3])).authToken();
-        state = State.SIGNEDIN;
+        state = SIGNEDIN;
         return "Successfully registered user " + entries[1] + "\n" + help();
     }
 
@@ -104,7 +127,7 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Invalid input");
         }
         authToken = serverFacade.login(new LoginRequest(entries[1], entries[2])).authToken();
-        state = State.SIGNEDIN;
+        state = SIGNEDIN;
         return "Successfully logged in user " + entries[1] + "\n" + help();
     }
 
@@ -157,12 +180,11 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Game ID must be a number and color must be of the form [WHITE/BLACK]");
         }
         if (gameId > numGames) {
-
             throw new Exception("Game " + gameId + " does not exist");
         }
 
         serverFacade.joinGame(gameId, color, authToken);
-
+        state = INGAME;
         var chessBoardLayout = new ChessBoardLayout(color);
         chessBoardLayout.printBoard();
         return "Joined Game as " + entries[2] + " player";
