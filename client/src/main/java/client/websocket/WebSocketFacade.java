@@ -28,9 +28,21 @@ public class WebSocketFacade extends Endpoint {
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
-                public void onMessage(String message) {
-                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
-                    notificationHandler.notify(serverMessage);
+                public void onMessage(String json) {
+                    Gson gson = new Gson();
+
+                    ServerMessage message = gson.fromJson(json, ServerMessage.class);
+                    ServerMessage fullMessage;
+
+                    switch (message.getServerMessageType()) {
+                        case NOTIFICATION ->
+                                fullMessage = gson.fromJson(json, websocket.messages.NotificationMessage.class);
+                        case LOAD_GAME -> fullMessage = gson.fromJson(json, websocket.messages.LoadGameMessage.class);
+                        case ERROR -> fullMessage = gson.fromJson(json, websocket.messages.ErrorMessage.class);
+                        default -> fullMessage = message;
+                    }
+
+                    notificationHandler.notify(fullMessage);
                 }
             });
         } catch (Exception e) {
@@ -65,6 +77,17 @@ public class WebSocketFacade extends Endpoint {
 
     public void sendMakeMoveMessage(ChessMove move, int gameID, String authToken) throws Exception {
         MakeMoveCommand command = new MakeMoveCommand(move, authToken, gameID);
+        String json = new Gson().toJson(command);
+        session.getBasicRemote().sendText(json);
+    }
+
+    public void sendConnectMessage(int gameID, String authToken) throws Exception {
+        UserGameCommand command = new UserGameCommand(
+                UserGameCommand.CommandType.CONNECT,
+                authToken,
+                gameID
+        );
+
         String json = new Gson().toJson(command);
         session.getBasicRemote().sendText(json);
     }

@@ -22,7 +22,6 @@ public class ChessClient implements NotificationHandler {
     private final ServerFacade serverFacade;
     private final WebSocketFacade webSocketFacade;
     private String authToken;
-    private int numGames = 0;
     private Integer gameID;
 
     public ChessClient(String serverUrl) throws Exception {
@@ -149,11 +148,10 @@ public class ChessClient implements NotificationHandler {
         if (entries.length != 1) {
             throw new Exception("Invalid input");
         }
-        if (numGames == 0) {
+        var games = serverFacade.listGames(authToken);
+        if (games == null || games.isEmpty()) {
             return "No games found";
         }
-
-        var games = serverFacade.listGames(authToken);
         StringBuilder gamesList = new StringBuilder();
         for (int i = 0; i < games.size(); i++) {
             String gameInfo = String.format("Game: %d\n - Name: %s\n - White User: %s\n - Black User: %s\n",
@@ -168,7 +166,6 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Invalid input");
         }
         serverFacade.createGame(entries[1], authToken);
-        numGames++;
         return "Game with name " + entries[1] + " has been created";
     }
 
@@ -183,11 +180,12 @@ public class ChessClient implements NotificationHandler {
         } catch (Exception e) {
             throw new Exception("Game ID must be a number and color must be of the form [WHITE/BLACK]");
         }
-        if (gameID > numGames) {
+        var games = serverFacade.listGames(authToken);
+        if (gameID < 1 || gameID > games.size()) {
             throw new Exception("Game " + gameID + " does not exist");
         }
-
         serverFacade.joinGame(gameID, color, authToken);
+        webSocketFacade.sendConnectMessage(gameID, authToken);
         state = INGAME;
         var chessBoardLayout = new ChessBoardLayout(color);
         chessBoardLayout.printBoard();
@@ -198,19 +196,19 @@ public class ChessClient implements NotificationHandler {
         if (entries.length != 2) {
             throw new Exception("Invalid input");
         }
-        int gameId;
         try {
-            gameId = Integer.parseInt(entries[1]);
+            gameID = Integer.parseInt(entries[1]);
         } catch (Exception e) {
             throw new Exception("Game ID must be a number");
         }
-        if (gameId > numGames) {
-            throw new Exception("Game " + gameId + " does not exist");
+        var games = serverFacade.listGames(authToken);
+        if (gameID < 1 || gameID > games.size()) {
+            throw new Exception("Game " + gameID + " does not exist");
         }
-
+        webSocketFacade.sendConnectMessage(gameID, authToken);
         var chessBoardLayout = new ChessBoardLayout(WHITE);
         chessBoardLayout.printBoard();
-        return "Observing game " + gameId;
+        return "Observing game " + gameID;
     }
 
     public String leave(String[] entries) throws Exception {
@@ -241,7 +239,9 @@ public class ChessClient implements NotificationHandler {
         }
 
         var startPosition = new ChessPosition(startCoordinates[1], conversions.get(String.valueOf(startCoordinates[0])));
+        System.out.println("Start Position = " + startPosition);
         var endPosition = new ChessPosition(endCoordinates[1], conversions.get(String.valueOf(endCoordinates[0])));
+        System.out.println("End Position = " + endPosition);
         return new ChessMove(startPosition, endPosition, null);
     }
 
