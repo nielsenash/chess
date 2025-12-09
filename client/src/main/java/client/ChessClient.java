@@ -188,7 +188,8 @@ public class ChessClient implements NotificationHandler {
         webSocketFacade.sendConnectMessage(gameID, authToken);
         state = INGAME;
         var chessBoardLayout = new ChessBoardLayout(color);
-        chessBoardLayout.printBoard();
+        var game = serverFacade.listGames(authToken).get(gameID - 1).game();
+        chessBoardLayout.printBoard(game.getChessBoard());
         return "Joined Game as " + entries[2] + " player";
     }
 
@@ -207,7 +208,8 @@ public class ChessClient implements NotificationHandler {
         }
         webSocketFacade.sendConnectMessage(gameID, authToken);
         var chessBoardLayout = new ChessBoardLayout(WHITE);
-        chessBoardLayout.printBoard();
+        var game = serverFacade.listGames(authToken).get(gameID - 1).game();
+        chessBoardLayout.printBoard(game.getChessBoard());
         return "Observing game " + gameID;
     }
 

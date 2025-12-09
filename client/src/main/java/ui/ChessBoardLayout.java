@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 
 import java.io.PrintStream;
@@ -19,7 +20,7 @@ public class ChessBoardLayout {
     }
 
 
-    public void printBoard() {
+    public void printBoard(ChessBoard board) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         //print file labels above and below the board
