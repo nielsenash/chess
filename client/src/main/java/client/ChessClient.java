@@ -238,10 +238,14 @@ public class ChessClient implements NotificationHandler {
             throw new InvalidMoveException("Start and end must be of this form: e4");
         }
 
-        var startPosition = new ChessPosition(startCoordinates[1], conversions.get(String.valueOf(startCoordinates[0])));
-        System.out.println("Start Position = " + startPosition);
-        var endPosition = new ChessPosition(endCoordinates[1], conversions.get(String.valueOf(endCoordinates[0])));
-        System.out.println("End Position = " + endPosition);
+        var startRow = Integer.parseInt(String.valueOf(startCoordinates[1]));
+        var startCol = conversions.get(String.valueOf(startCoordinates[0]));
+        var endRow = Integer.parseInt(String.valueOf(endCoordinates[1]));
+        var endCol = conversions.get(String.valueOf(endCoordinates[0]));
+        var startPosition = new ChessPosition(startRow, startCol);
+        var endPosition = new ChessPosition(endRow, endCol);
+        System.out.println(startPosition);
+        System.out.println(endPosition);
         return new ChessMove(startPosition, endPosition, null);
     }
 
