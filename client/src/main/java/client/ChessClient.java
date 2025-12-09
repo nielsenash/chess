@@ -19,6 +19,7 @@ public class ChessClient implements NotificationHandler {
     private final WebSocketFacade webSocketFacade;
     private String authToken;
     private int numGames = 0;
+    private Integer gameID;
 
     public ChessClient(String serverUrl) throws Exception {
         serverFacade = new ServerFacade(serverUrl);
@@ -70,7 +71,7 @@ public class ChessClient implements NotificationHandler {
                         switch (command) {
                             case "help" -> help();
                             case "redraw chess board" -> null; //redraw(entries);
-                            case "leave" -> "leaving the game"; //leave(entries);
+                            case "leave" -> leave(entries);
                             case "make move" -> null; //makeMove(entries);
                             case "resign" -> null; //resign(entries);
                             case "highlight legal moves" -> null; //highlight(entries);
@@ -171,19 +172,18 @@ public class ChessClient implements NotificationHandler {
         if (entries.length != 3) {
             throw new Exception("Invalid input");
         }
-        int gameId;
         ChessGame.TeamColor color;
         try {
-            gameId = Integer.parseInt(entries[1]);
+            gameID = Integer.parseInt(entries[1]);
             color = ChessGame.TeamColor.valueOf(entries[2].toUpperCase());
         } catch (Exception e) {
             throw new Exception("Game ID must be a number and color must be of the form [WHITE/BLACK]");
         }
-        if (gameId > numGames) {
-            throw new Exception("Game " + gameId + " does not exist");
+        if (gameID > numGames) {
+            throw new Exception("Game " + gameID + " does not exist");
         }
 
-        serverFacade.joinGame(gameId, color, authToken);
+        serverFacade.joinGame(gameID, color, authToken);
         state = INGAME;
         var chessBoardLayout = new ChessBoardLayout(color);
         chessBoardLayout.printBoard();
@@ -207,6 +207,15 @@ public class ChessClient implements NotificationHandler {
         var chessBoardLayout = new ChessBoardLayout(WHITE);
         chessBoardLayout.printBoard();
         return "Observing game " + gameId;
+    }
+
+    public String leave(String[] entries) throws Exception {
+        if (entries.length != 1) {
+            throw new Exception("Invalid input");
+        }
+        webSocketFacade.sendLeaveMessage(gameID, authToken);
+        state = SIGNEDIN;
+        return "Leaving the game";
     }
 
     @Override

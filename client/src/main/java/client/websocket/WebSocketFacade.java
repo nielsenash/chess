@@ -3,6 +3,7 @@ package client.websocket;
 import com.google.gson.Gson;
 
 import jakarta.websocket.*;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 import java.net.URI;
@@ -39,5 +40,16 @@ public class WebSocketFacade extends Endpoint {
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
+
+    public void sendLeaveMessage(int gameID, String authToken) throws Exception {
+        UserGameCommand command = new UserGameCommand(
+                UserGameCommand.CommandType.LEAVE,
+                authToken,
+                gameID
+        );
+        String json = new Gson().toJson(command);
+        session.getBasicRemote().sendText(json);
+    }
+
 }
 
