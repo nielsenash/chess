@@ -1,6 +1,9 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import model.LoginRequest;
@@ -8,6 +11,7 @@ import model.UserData;
 import ui.ChessBoardLayout;
 import websocket.messages.ServerMessage;
 
+import java.util.Map;
 import java.util.Scanner;
 
 import static chess.ChessGame.TeamColor.WHITE;
@@ -70,11 +74,11 @@ public class ChessClient implements NotificationHandler {
                         } :
                         switch (command) {
                             case "help" -> help();
-                            case "redraw chess board" -> null; //redraw(entries);
+                            case "redraw" -> null; //redraw(entries);
                             case "leave" -> leave(entries);
-                            case "make move" -> null; //makeMove(entries);
-                            case "resign" -> null; //resign(entries);
-                            case "highlight legal moves" -> null; //highlight(entries);
+                            case "make" -> makeMove(entries);
+                            case "resign" -> resign(entries);
+                            case "highlight" -> null; //highlight(entries);
                             default -> "Invalid Option";
                         };
 
@@ -218,8 +222,46 @@ public class ChessClient implements NotificationHandler {
         return "Leaving the game";
     }
 
+    public String resign(String[] entries) throws Exception {
+        if (entries.length != 1) {
+            throw new Exception("Invalid input");
+        }
+        webSocketFacade.sendResignMessage(gameID, authToken);
+        return "resigning the game";
+    }
+
+    public ChessMove convertToMove(String start, String end) throws Exception {
+        Map<String, Integer> conversions = Map.of(
+                "a", 1, "b", 2, "c", 3, "d", 4, "e", 5, "f", 6, "g", 7, "h", 8
+        );
+        char[] startCoordinates = start.toCharArray();
+        char[] endCoordinates = end.toCharArray();
+        if (startCoordinates.length != 2 || endCoordinates.length != 2) {
+            throw new InvalidMoveException("Start and end must be of this form: e4");
+        }
+
+        var startPosition = new ChessPosition(startCoordinates[1], conversions.get(String.valueOf(startCoordinates[0])));
+        var endPosition = new ChessPosition(endCoordinates[1], conversions.get(String.valueOf(endCoordinates[0])));
+        return new ChessMove(startPosition, endPosition, null);
+    }
+
+    public String makeMove(String[] entries) throws Exception {
+        if (entries.length != 4) {
+            throw new Exception("Invalid input");
+        }
+        try {
+            var move = convertToMove(entries[2], entries[3]);
+            webSocketFacade.sendMakeMoveMessage(move, gameID, authToken);
+            return "made move " + move.toString();
+        } catch (InvalidMoveException e) {
+            return "Error: Invalid Move";
+        }
+
+    }
+
     @Override
     public void notify(ServerMessage message) {
         System.out.println(message);
     }
+
 }
