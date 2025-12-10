@@ -1,9 +1,6 @@
 package client;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPosition;
-import chess.InvalidMoveException;
+import chess.*;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import model.LoginRequest;
@@ -14,6 +11,7 @@ import websocket.messages.ServerMessage;
 import java.util.Map;
 import java.util.Scanner;
 
+import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static client.State.*;
 
@@ -268,6 +266,36 @@ public class ChessClient implements NotificationHandler {
         }
         try {
             var move = convertToMove(entries[1], entries[2]);
+            var game = serverFacade.listGames(authToken).get(gameID - 1).game();
+            var start = move.getStartPosition();
+            var end = move.getEndPosition();
+            var piece = game.getChessBoard().getPiece(start);
+
+            if (piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                boolean isPromotion = (piece.getTeamColor() == WHITE && end.getRow() == 8) ||
+                        (piece.getTeamColor() == BLACK && end.getRow() == 1);
+
+                if (isPromotion) {
+                    System.out.println("Pawn promotion! Choose piece [QUEEN/ROOK/BISHOP/KNIGHT]: ");
+                    Scanner scanner = new Scanner(System.in);
+                    String promotionChoice = scanner.nextLine();
+
+                    ChessPiece.PieceType promotionPiece;
+                    try {
+                        promotionPiece = ChessPiece.PieceType.valueOf(promotionChoice);
+                        if (promotionPiece != ChessPiece.PieceType.QUEEN &&
+                                promotionPiece != ChessPiece.PieceType.ROOK &&
+                                promotionPiece != ChessPiece.PieceType.BISHOP &&
+                                promotionPiece != ChessPiece.PieceType.KNIGHT) {
+                            throw new Exception("Invalid promotion piece");
+                        }
+                    } catch (IllegalArgumentException e) {
+                        return "Error: Invalid promotion piece. Must be QUEEN, ROOK, BISHOP, or KNIGHT";
+                    }
+                    move = new ChessMove(start, end, promotionPiece);
+                }
+            }
+
             webSocketFacade.sendMakeMoveMessage(move, gameID, authToken);
             return "";
 

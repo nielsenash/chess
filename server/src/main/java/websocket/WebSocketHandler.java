@@ -1,6 +1,7 @@
 package websocket;
 
 import chess.ChessGame;
+import chess.ChessPiece;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDataAccess;
@@ -153,7 +154,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
-
         try {
             gameService.updateBoard(command.getGameID(), move);
             game = gameDao.getGame(command.getGameID());
@@ -162,6 +162,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connectionManager.broadcast(command.getGameID(), session, new NotificationMessage(username + " made the move: " + move.toString()));
 
             if (game.game().isInCheckmate(BLACK) || game.game().isInCheckmate(WHITE)) {
+                gameService.setGameOver(game.gameID());
                 sendNotification(command.getGameID(), username + " is in checkmate! GAME OVER ");
             } else if (game.game().isInCheck(BLACK) || game.game().isInCheck(WHITE)) {
                 sendNotification(command.getGameID(), username + " is in check!");
