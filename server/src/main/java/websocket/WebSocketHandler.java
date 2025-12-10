@@ -13,7 +13,6 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
 import model.GameData;
-import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import websocket.commands.MakeMoveCommand;
@@ -133,7 +132,11 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         var move = command.getMove();
         var user = authDao.getAuth(command.getAuthToken());
         var game = gameDao.getGame(command.getGameID());
-        validate(session, user, game);
+
+        if (!validate(session, user, game)) {
+            return;
+        }
+
         String username = user.username();
         if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
             sendError(session, "Error: Observer cannot make moves");
@@ -146,12 +149,31 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return;
         }
 
+        if (game.game().getTeamTurn() != color) {
+            sendError(session, "Error: It's not your turn");
+            return;
+        }
+
+        if (game.game().isGameOver()) {
+            sendError(session, "Error: Game Over");
+            return;
+        }
+
         try {
             gameService.updateBoard(command.getGameID(), move);
-            sendNotification(command.getGameID(), username + " made the move: " + move.toString() + ".\nIt's your turn!");
-            LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
-            //send a message to everyone
-            connectionManager.broadcast(command.getGameID(), null, loadGameMessage);
+            game = gameDao.getGame(command.getGameID());
+
+            connectionManager.broadcast(command.getGameID(), null, new LoadGameMessage(game.game(), color));
+            connectionManager.broadcast(command.getGameID(), session, new NotificationMessage(username + " made the move: " + move.toString()));
+
+            if (game.game().isInCheckmate(BLACK) || game.game().isInCheckmate(WHITE)) {
+                ChessGame.TeamColor team = game.game().isInCheckmate(BLACK) ? BLACK : WHITE;
+                sendNotification(command.getGameID(), team + " is in checkmate!");
+            } else if (game.game().isInCheck(BLACK) || game.game().isInCheck(WHITE)) {
+                ChessGame.TeamColor team = game.game().isInCheck(BLACK) ? BLACK : WHITE;
+                sendNotification(command.getGameID(), team + " is in check!");
+            }
+
         } catch (InvalidMoveException e) {
             sendError(session, "Error: Invalid Move");
         }
@@ -185,6 +207,10 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private void sendLoadGame(Session session, GameData game, AuthData user) throws Exception {
-        connectionManager.send(session, new LoadGameMessage(game.game()));
+        var color = WHITE;
+        if (user.username().equals(game.blackUsername())) {
+            color = BLACK;
+        }
+        connectionManager.send(session, new LoadGameMessage(game.game(), color));
     }
 }

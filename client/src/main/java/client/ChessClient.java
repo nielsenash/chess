@@ -77,7 +77,7 @@ public class ChessClient implements NotificationHandler {
                             case "help" -> help();
                             case "redraw" -> redraw(entries);
                             case "leave" -> leave(entries);
-                            case "make" -> makeMove(entries);
+                            case "move" -> makeMove(entries);
                             case "resign" -> resign(entries);
                             case "highlight" -> null; //highlight(entries);
                             default -> "Invalid Option";
@@ -109,9 +109,9 @@ public class ChessClient implements NotificationHandler {
         } else {
             return """
                     \nOPTIONS
-                    - redraw board
+                    - redraw
                     - leave
-                    - make move <START> <END>
+                    - move <START> <END>
                     - resign
                     - highlight legal moves
                     """;
@@ -208,6 +208,7 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Game " + gameID + " does not exist");
         }
         webSocketFacade.sendConnectMessage(gameID, authToken);
+        state = INGAME;
         var game = serverFacade.listGames(authToken).get(gameID - 1).game();
         var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), WHITE);
         chessBoardLayout.printBoard();
@@ -251,27 +252,28 @@ public class ChessClient implements NotificationHandler {
     }
 
     public String makeMove(String[] entries) throws Exception {
-        if (entries.length != 4) {
+        if (entries.length != 3) {
             throw new Exception("Invalid input");
         }
         try {
-            var move = convertToMove(entries[2], entries[3]);
+            var move = convertToMove(entries[1], entries[2]);
             webSocketFacade.sendMakeMoveMessage(move, gameID, authToken);
+            return "made move " + entries[1] + " to " + entries[2];
 
         } catch (InvalidMoveException e) {
             return "Error: Invalid Move";
         }
-        return "made move " + entries[2] + " to " + entries[3];
+
     }
 
     public String redraw(String[] entries) throws Exception {
-        if (entries.length != 2) {
+        if (entries.length != 1) {
             throw new Exception("Invalid input");
         }
         var game = serverFacade.listGames(authToken).get(gameID - 1).game();
         var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), color);
         chessBoardLayout.printBoard();
-        return "Redrawing board";
+        return "";
     }
 
     @Override

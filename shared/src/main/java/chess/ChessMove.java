@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -13,6 +14,10 @@ public class ChessMove {
     ChessPosition startPosition;
     ChessPosition endPosition;
     ChessPiece.PieceType promotionPiece;
+
+    Map<Integer, String> conversions = Map.of(
+            1, "a", 2, "b", 3, "c", 4, "d", 5, "e", 6, "f", 7, "g", 8, "h"
+    );
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
@@ -62,6 +67,6 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return startPosition.toString() + " to " + endPosition.toString();
+        return conversions.get(startPosition.col) + startPosition.row + " to " + conversions.get(endPosition.col) + endPosition.row;
     }
 }
