@@ -110,13 +110,20 @@ public class ChessClient implements NotificationHandler {
                     - quit
                     - help
                     """;
-        } else {
+        } else if (state == INGAME) {
             return """
                     \nOPTIONS
                     - redraw
                     - leave
                     - move <START> <END>
                     - resign
+                    - highlight legal moves
+                    """;
+        } else {
+            return """
+                    \nOPTIONS
+                    - redraw
+                    - leave
                     - highlight legal moves
                     """;
         }

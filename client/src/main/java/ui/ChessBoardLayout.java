@@ -102,7 +102,7 @@ public class ChessBoardLayout {
             }
         } else {
             for (int i = 0; i < printableBoard.size(); i++) {
-                var backgroundStartColor = (i % 2 == 0) ? SET_BG_COLOR_MAGENTA : SET_BG_COLOR_WHITE;
+                var backgroundStartColor = (i % 2 == 0) ? SET_BG_COLOR_WHITE : SET_BG_COLOR_MAGENTA;
                 drawRow(out, i + 1, printableBoard.get(i), backgroundStartColor);
             }
         }
