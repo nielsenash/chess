@@ -23,6 +23,8 @@ public class ChessClient implements NotificationHandler {
     private final WebSocketFacade webSocketFacade;
     private String authToken;
     private Integer gameID;
+    private ChessGame.TeamColor color = WHITE;
+
 
     public ChessClient(String serverUrl) throws Exception {
         serverFacade = new ServerFacade(serverUrl);
@@ -73,7 +75,7 @@ public class ChessClient implements NotificationHandler {
                         } :
                         switch (command) {
                             case "help" -> help();
-                            case "redraw" -> null; //redraw(entries);
+                            case "redraw" -> redraw(entries);
                             case "leave" -> leave(entries);
                             case "make" -> makeMove(entries);
                             case "resign" -> resign(entries);
@@ -107,7 +109,7 @@ public class ChessClient implements NotificationHandler {
         } else {
             return """
                     \nOPTIONS
-                    - redraw chess board
+                    - redraw board
                     - leave
                     - make move <START> <END>
                     - resign
@@ -173,7 +175,6 @@ public class ChessClient implements NotificationHandler {
         if (entries.length != 3) {
             throw new Exception("Invalid input");
         }
-        ChessGame.TeamColor color;
         try {
             gameID = Integer.parseInt(entries[1]);
             color = ChessGame.TeamColor.valueOf(entries[2].toUpperCase());
@@ -246,8 +247,6 @@ public class ChessClient implements NotificationHandler {
         var endCol = conversions.get(String.valueOf(endCoordinates[0]));
         var startPosition = new ChessPosition(startRow, startCol);
         var endPosition = new ChessPosition(endRow, endCol);
-        System.out.println(startPosition);
-        System.out.println(endPosition);
         return new ChessMove(startPosition, endPosition, null);
     }
 
@@ -258,11 +257,21 @@ public class ChessClient implements NotificationHandler {
         try {
             var move = convertToMove(entries[2], entries[3]);
             webSocketFacade.sendMakeMoveMessage(move, gameID, authToken);
-            return "made move " + move.toString();
+
         } catch (InvalidMoveException e) {
             return "Error: Invalid Move";
         }
+        return "made move " + entries[2] + " to " + entries[3];
+    }
 
+    public String redraw(String[] entries) throws Exception {
+        if (entries.length != 2) {
+            throw new Exception("Invalid input");
+        }
+        var game = serverFacade.listGames(authToken).get(gameID - 1).game();
+        var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), color);
+        chessBoardLayout.printBoard();
+        return "Redrawing board";
     }
 
     @Override

@@ -38,6 +38,7 @@ public class WebSocketFacade extends Endpoint {
                         case NOTIFICATION ->
                                 fullMessage = gson.fromJson(json, websocket.messages.NotificationMessage.class);
                         case LOAD_GAME -> fullMessage = gson.fromJson(json, websocket.messages.LoadGameMessage.class);
+                        
                         case ERROR -> fullMessage = gson.fromJson(json, websocket.messages.ErrorMessage.class);
                         default -> fullMessage = message;
                     }

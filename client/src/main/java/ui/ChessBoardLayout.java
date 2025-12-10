@@ -68,6 +68,7 @@ public class ChessBoardLayout {
         drawFileLabels(out);
         drawChessBoard(out, printableBoard);
         drawFileLabels(out);
+        setWhite(out);
     }
 
     private void drawFileLabels(PrintStream out) {
@@ -134,7 +135,7 @@ public class ChessBoardLayout {
     }
 
     private void setWhite(PrintStream out) {
-        out.print(SET_BG_COLOR_WHITE);
+        out.print(SET_TEXT_COLOR_WHITE);
     }
 
 

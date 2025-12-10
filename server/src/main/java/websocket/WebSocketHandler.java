@@ -13,6 +13,7 @@ import io.javalin.websocket.WsMessageContext;
 import io.javalin.websocket.WsMessageHandler;
 import model.AuthData;
 import model.GameData;
+import model.UserData;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import websocket.commands.MakeMoveCommand;
@@ -91,8 +92,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         connectionManager.add(command.getGameID(), session);
-        LoadGameMessage message = new LoadGameMessage(game.game());
-        session.getRemote().sendString(new Gson().toJson(message));
+        sendLoadGame(session, game, user);
 
 
         String username = user.username();
@@ -148,9 +148,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         try {
             gameService.updateBoard(command.getGameID(), move);
-            NotificationMessage notification = new NotificationMessage(username + " made the move: " + move.toString() + ".\nIt's your turn!");
-            connectionManager.broadcast(command.getGameID(), session, notification);
-
+            sendNotification(command.getGameID(), username + " made the move: " + move.toString() + ".\nIt's your turn!");
             LoadGameMessage loadGameMessage = new LoadGameMessage(game.game());
             //send a message to everyone
             connectionManager.broadcast(command.getGameID(), null, loadGameMessage);
@@ -174,15 +172,19 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             sendError(session, "Error: Game is already over");
             return;
         }
-
         gameService.setGameOver(game.gameID());
-
-        NotificationMessage notification = new NotificationMessage(username + " resigned the game");
-        connectionManager.broadcast(command.getGameID(), null, notification);
+        sendNotification(command.getGameID(), username + " resigned the game");
     }
 
     private void sendError(Session session, String error) throws Exception {
-        ErrorMessage errorMessage = new ErrorMessage(error);
-        connectionManager.send(session, errorMessage);
+        connectionManager.send(session, new ErrorMessage(error));
+    }
+
+    private void sendNotification(Integer gameID, String message) throws Exception {
+        connectionManager.broadcast(gameID, null, new NotificationMessage(message));
+    }
+
+    private void sendLoadGame(Session session, GameData game, AuthData user) throws Exception {
+        connectionManager.send(session, new LoadGameMessage(game.game()));
     }
 }
