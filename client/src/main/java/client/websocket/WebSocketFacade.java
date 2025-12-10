@@ -1,5 +1,6 @@
 package client.websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 
@@ -12,11 +13,14 @@ import websocket.messages.ServerMessage;
 
 import java.net.URI;
 
+import static chess.ChessGame.TeamColor.WHITE;
+
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
     Session session;
     NotificationHandler notificationHandler;
+    ChessGame.TeamColor color = WHITE;
 
     public WebSocketFacade(String url, NotificationHandler notificationHandler) throws Exception {
         try {
@@ -40,11 +44,16 @@ public class WebSocketFacade extends Endpoint {
                         case NOTIFICATION ->
                                 fullMessage = gson.fromJson(json, websocket.messages.NotificationMessage.class);
                         case LOAD_GAME -> {
-                            fullMessage = gson.fromJson(json, websocket.messages.LoadGameMessage.class);
-                            LoadGameMessage loadGameMessage = (LoadGameMessage) message;
-                            var chessBoardLayout = new ChessBoardLayout(loadGameMessage.getGame().getChessBoard().getBoard(), loadGameMessage.getColor());
+                            LoadGameMessage loadGameMessage = gson.fromJson(json, LoadGameMessage.class);
+                            fullMessage = loadGameMessage;
+
+                            var chessBoardLayout = new ChessBoardLayout(
+                                    loadGameMessage.getGame().getChessBoard().getBoard(),
+                                    color
+                            );
                             chessBoardLayout.printBoard();
                         }
+
                         case ERROR -> fullMessage = gson.fromJson(json, websocket.messages.ErrorMessage.class);
                         default -> fullMessage = message;
                     }
@@ -60,6 +69,10 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+    }
+
+    public void setClientColor(ChessGame.TeamColor color) {
+        this.color = color;
     }
 
     public void sendLeaveMessage(int gameID, String authToken) throws Exception {

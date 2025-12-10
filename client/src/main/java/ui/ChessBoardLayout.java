@@ -56,6 +56,19 @@ public class ChessBoardLayout {
         return array;
     }
 
+    public void printHighlightedBoard() {
+        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+
+        var printableBoard = getStringArray(board);
+
+        //print file labels above and below the board
+
+        setGrey(out);
+        drawFileLabels(out);
+        drawChessBoard(out, printableBoard);
+        drawFileLabels(out);
+        setWhite(out);
+    }
 
     public void printBoard() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);

@@ -24,6 +24,6 @@ public class LoadGameMessage extends ServerMessage {
 
     @Override
     public String toString() {
-        return "Loading Game:";
+        return "";
     }
 }

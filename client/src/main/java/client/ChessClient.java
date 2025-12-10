@@ -73,17 +73,23 @@ public class ChessClient implements NotificationHandler {
                             case "quit" -> "quit";
                             default -> "Invalid Option";
                         } :
-                        switch (command) {
-                            case "help" -> help();
-                            case "redraw" -> redraw(entries);
-                            case "leave" -> leave(entries);
-                            case "move" -> makeMove(entries);
-                            case "resign" -> resign(entries);
-                            case "highlight" -> null; //highlight(entries);
-                            default -> "Invalid Option";
-                        };
-
-
+                        (state == INGAME) ?
+                                switch (command) {
+                                    case "help" -> help();
+                                    case "redraw" -> redraw(entries);
+                                    case "leave" -> leave(entries);
+                                    case "move" -> makeMove(entries);
+                                    case "resign" -> resign(entries);
+                                    case "highlight" -> null; //highlight(entries);
+                                    default -> "Invalid Option";
+                                } :
+                                switch (command) {
+                                    case "help" -> help();
+                                    case "redraw" -> redraw(entries);
+                                    case "leave" -> leave(entries);
+                                    case "highlight" -> null; //highlight(entries);
+                                    default -> "Invalid Option";
+                                };
     }
 
     public String help() {
@@ -186,11 +192,9 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Game " + gameID + " does not exist");
         }
         serverFacade.joinGame(gameID, color, authToken);
+        webSocketFacade.setClientColor(color);
         webSocketFacade.sendConnectMessage(gameID, authToken);
         state = INGAME;
-        var game = serverFacade.listGames(authToken).get(gameID - 1).game();
-        var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), color);
-        chessBoardLayout.printBoard();
         return "Joined Game as " + entries[2] + " player";
     }
 
@@ -207,11 +211,9 @@ public class ChessClient implements NotificationHandler {
         if (gameID < 1 || gameID > games.size()) {
             throw new Exception("Game " + gameID + " does not exist");
         }
+        webSocketFacade.setClientColor(WHITE);
         webSocketFacade.sendConnectMessage(gameID, authToken);
-        state = INGAME;
-        var game = serverFacade.listGames(authToken).get(gameID - 1).game();
-        var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), WHITE);
-        chessBoardLayout.printBoard();
+        state = INGAMEOBSERVER;
         return "Observing game " + gameID;
     }
 
@@ -228,8 +230,17 @@ public class ChessClient implements NotificationHandler {
         if (entries.length != 1) {
             throw new Exception("Invalid input");
         }
-        webSocketFacade.sendResignMessage(gameID, authToken);
-        return "resigning the game";
+        System.out.println("Please confirm your resignation: [yes/no] \n");
+
+        Scanner scanner = new Scanner(System.in);
+        var result = eval(scanner.nextLine());
+        if (result.equals("yes")) {
+            webSocketFacade.sendResignMessage(gameID, authToken);
+        } else {
+            return "resignation cancelled";
+        }
+
+        return "";
     }
 
     public ChessMove convertToMove(String start, String end) throws Exception {
@@ -258,7 +269,7 @@ public class ChessClient implements NotificationHandler {
         try {
             var move = convertToMove(entries[1], entries[2]);
             webSocketFacade.sendMakeMoveMessage(move, gameID, authToken);
-            return "made move " + entries[1] + " to " + entries[2];
+            return "";
 
         } catch (InvalidMoveException e) {
             return "Error: Invalid Move";
@@ -271,6 +282,8 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Invalid input");
         }
         var game = serverFacade.listGames(authToken).get(gameID - 1).game();
+
+
         var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), color);
         chessBoardLayout.printBoard();
         return "";

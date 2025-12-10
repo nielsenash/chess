@@ -138,26 +138,21 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         String username = user.username();
-        if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
+        ChessGame.TeamColor color = username.equals(game.whiteUsername()) ? WHITE : BLACK;
+        if (game.game().isGameOver()) {
+            sendError(session, "Error: Game Over");
+            return;
+        } else if (!username.equals(game.whiteUsername()) && !username.equals(game.blackUsername())) {
             sendError(session, "Error: Observer cannot make moves");
             return;
-        }
-
-        ChessGame.TeamColor color = username.equals(game.whiteUsername()) ? WHITE : BLACK;
-        if (color != game.game().getChessBoard().getPiece(move.getStartPosition()).getTeamColor()) {
+        } else if (game.game().getTeamTurn() != color) {
+            sendError(session, "Error: It's not your turn");
+            return;
+        } else if (color != game.game().getChessBoard().getPiece(move.getStartPosition()).getTeamColor()) {
             sendError(session, "Error: Cannot move opponent's piece");
             return;
         }
 
-        if (game.game().getTeamTurn() != color) {
-            sendError(session, "Error: It's not your turn");
-            return;
-        }
-
-        if (game.game().isGameOver()) {
-            sendError(session, "Error: Game Over");
-            return;
-        }
 
         try {
             gameService.updateBoard(command.getGameID(), move);
@@ -167,11 +162,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             connectionManager.broadcast(command.getGameID(), session, new NotificationMessage(username + " made the move: " + move.toString()));
 
             if (game.game().isInCheckmate(BLACK) || game.game().isInCheckmate(WHITE)) {
-                ChessGame.TeamColor team = game.game().isInCheckmate(BLACK) ? BLACK : WHITE;
-                sendNotification(command.getGameID(), team + " is in checkmate!");
+                sendNotification(command.getGameID(), username + " is in checkmate! GAME OVER ");
             } else if (game.game().isInCheck(BLACK) || game.game().isInCheck(WHITE)) {
-                ChessGame.TeamColor team = game.game().isInCheck(BLACK) ? BLACK : WHITE;
-                sendNotification(command.getGameID(), team + " is in check!");
+                sendNotification(command.getGameID(), username + " is in check!");
             }
 
         } catch (InvalidMoveException e) {
