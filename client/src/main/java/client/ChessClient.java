@@ -187,9 +187,9 @@ public class ChessClient implements NotificationHandler {
         serverFacade.joinGame(gameID, color, authToken);
         webSocketFacade.sendConnectMessage(gameID, authToken);
         state = INGAME;
-        var chessBoardLayout = new ChessBoardLayout(color);
         var game = serverFacade.listGames(authToken).get(gameID - 1).game();
-        chessBoardLayout.printBoard(game.getChessBoard());
+        var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), color);
+        chessBoardLayout.printBoard();
         return "Joined Game as " + entries[2] + " player";
     }
 
@@ -207,9 +207,9 @@ public class ChessClient implements NotificationHandler {
             throw new Exception("Game " + gameID + " does not exist");
         }
         webSocketFacade.sendConnectMessage(gameID, authToken);
-        var chessBoardLayout = new ChessBoardLayout(WHITE);
         var game = serverFacade.listGames(authToken).get(gameID - 1).game();
-        chessBoardLayout.printBoard(game.getChessBoard());
+        var chessBoardLayout = new ChessBoardLayout(game.getChessBoard().getBoard(), WHITE);
+        chessBoardLayout.printBoard();
         return "Observing game " + gameID;
     }
 
