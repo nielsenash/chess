@@ -43,7 +43,7 @@ public class ChessBoardLayout {
     public ArrayList<String> getStringList(ChessPiece[] chessPieceList) {
         var list = new ArrayList<String>();
         for (ChessPiece p : chessPieceList) {
-            list.add(mappings.get(p));
+            list.add(p == null ? EMPTY : mappings.get(p));
         }
         return list;
     }
@@ -64,17 +64,17 @@ public class ChessBoardLayout {
 
         //print file labels above and below the board
 
-        setBlack(out);
-        drawFileLabels(out, SET_BG_COLOR_LIGHT_GREY);
+        setGrey(out);
+        drawFileLabels(out);
         drawChessBoard(out, printableBoard);
-        drawFileLabels(out, SET_BG_COLOR_LIGHT_GREY);
+        drawFileLabels(out);
     }
 
-    private void drawFileLabels(PrintStream out, String color) {
-        System.out.print(color);
+    private void drawFileLabels(PrintStream out) {
+        System.out.print(EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
         var labels = team == WHITE
-                ? "    A   B  C   D  E   F   G  H     "
-                : "    H   G  F   E  D   C   B  A     ";
+                ? "     A     B     C    D     E     F     G    H     "
+                : "     H     G     F    E     D     C     B    A     ";
         System.out.print(labels);
         System.out.println(RESET_BG_COLOR);
     }
@@ -82,23 +82,59 @@ public class ChessBoardLayout {
     private void drawChessBoard(PrintStream out, ArrayList<ArrayList<String>> printableBoard) {
 
         if (team == WHITE) {
-            for (ArrayList<String> row : printableBoard) {
-                drawRow(row);
+            for (int i = printableBoard.size() - 1; i >= 0; i--) {
+                var backgroundStartColor = (i % 2 == 0) ? SET_BG_COLOR_MAGENTA : SET_BG_COLOR_WHITE;
+                drawRow(out, i + 1, printableBoard.get(i), backgroundStartColor);
+            }
+        } else {
+            for (int i = 0; i < printableBoard.size(); i++) {
+                var backgroundStartColor = (i % 2 == 0) ? SET_BG_COLOR_MAGENTA : SET_BG_COLOR_WHITE;
+                drawRow(out, i + 1, printableBoard.get(i), backgroundStartColor);
             }
         }
+
     }
 
-    private void drawRow(ArrayList<String> row) {
-        for (String square : row) {
-            System.out.println(square);
+    private void drawRow(PrintStream out, int rowNumber, ArrayList<String> row, String backgroundStartColor) {
+        setGrey(out);
+        System.out.printf(" %d ", rowNumber);
+
+        String bg = backgroundStartColor;
+
+        if (team == WHITE) {
+            for (String square : row) {
+                out.print(bg);
+                out.print(" " + square + " ");
+                bg = (bg.equals(SET_BG_COLOR_MAGENTA)) ? SET_BG_COLOR_WHITE : SET_BG_COLOR_MAGENTA;
+            }
+        } else {
+            for (int i = row.size() - 1; i >= 0; i--) {
+                out.print(bg);
+                out.print(" " + row.get(i) + " ");
+                bg = (bg.equals(SET_BG_COLOR_MAGENTA)) ? SET_BG_COLOR_WHITE : SET_BG_COLOR_MAGENTA;
+            }
         }
+
+
+        setGrey(out);
+        System.out.printf(" %d ", rowNumber);
+        setBlack(out);
         System.out.println();
     }
 
 
-    private void setBlack(PrintStream out) {
+    private void setGrey(PrintStream out) {
         out.print(SET_TEXT_COLOR_BLACK);
         out.print(SET_BG_COLOR_LIGHT_GREY);
+    }
+
+    private void setBlack(PrintStream out) {
+        out.print(SET_TEXT_COLOR_BLACK);
+        out.print(SET_BG_COLOR_DARK_GREY);
+    }
+
+    private void setWhite(PrintStream out) {
+        out.print(SET_BG_COLOR_WHITE);
     }
 
 
